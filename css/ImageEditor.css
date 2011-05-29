@@ -1,0 +1,79 @@
+/*
+ * ImageEditor Canvas
+ * These width and height scale the canvas rather than changing its dimensions.
+.flc-image-canvas {
+	width: 500px;
+	height: 500px;
+}
+*/
+
+.fl-image-editor-border {
+	border: 2px solid red;
+}
+
+/*
+ * Misc
+ */
+
+/* hidden */
+.fl-image-editor-hidden {
+    display: none;
+}
+
+/* dimmed */
+.fl-image-editor-dim {
+    opacity: 0.4;
+    filter:alpha(opacity=40);
+}
+
+
+.fl-image-editor-buttons {
+    margin-top: 1em;
+    text-align:right;
+}
+
+/* General Buttons */
+.fl-image-editor-buttons button {
+    border-width: 1px;
+    border-style: solid;
+    font-weight: bolder;
+    font-size: 1.06em;
+    color: #FFF;
+    height: 32px;
+    padding:0px;
+    margin-right: 1em;
+    outline: none;
+    cursor: pointer;
+    width: 8.4em;
+}
+
+.fl-image-editor-buttons button:focus {
+    outline: 2px solid #142B8C;
+}
+
+.fl-image-editor-buttons .fl-image-editor-button-resize {
+    background-color: #74B74A;
+    border-color: #006838;
+}
+
+.fl-image-editor-buttons .fl-image-editor-button-resize:hover {
+    background-color: #519325;
+    border-color: #142B8C;
+}
+
+.fl-image-editor-buttons .fl-image-editor-button-crop {
+    background-color: #74B74A;
+    border-color: #006838;
+}
+
+.fl-image-editor-buttons .fl-image-editor-button-crop:hover {
+    background-color: #519325;
+    border-color: #142B8C;
+}
+
+/* disabled button */
+.fl-image-editor-buttons .fl-image-editor-dim, .fl-image-editor-buttons .fl-image-editor-dim:hover {
+    background-color: #999;
+    border-color: #666666;
+    cursor: auto;
+}
