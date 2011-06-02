@@ -87,7 +87,7 @@ var fluid_1_4 = fluid_1_4 || {};
     	if (that.cropStarted) {
     		that.cropStarted = false;
     		enableElement(that, that.resizeButton);
-    		clearInterval(that.cropperID);
+    		enableElement(that, that.tagButton);
     		that.cropper.reset();
     		clearCanvas (that);
     		//cropImage(that, startX, startY, w, h);
@@ -96,29 +96,25 @@ var fluid_1_4 = fluid_1_4 || {};
     	} else {
     		disableElement(that, that.resizeButton);
     		that.cropStarted = true;
-			that.cropperID = that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);	
+			that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);	
     	}
     	
     }
     
     var setupTag = function (that) {
-    	alert("Sapan");
-    	that.tagger.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);
-    	/*if (that.cropStarted) {
-    		that.cropStarted = false;
-    		enableElement(that, that.resizeButton);
-    		clearInterval(that.cropperID);
-    		that.cropper.reset();
+    	if (that.tagStarted) {
+    		that.tagStarted = false;
+    		enableElement(that, that.cropButton);
+    		enableElement(that, that.resizeButton);    		
+    		that.tagger.reset();
     		clearCanvas (that);
-    		//cropImage(that, startX, startY, w, h);
-    		drawImage (that);
-    		
+    		drawImage (that);    		
     	} else {
     		disableElement(that, that.resizeButton);
-    		that.cropStarted = true;
-			that.cropperID = that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);	
-    	}*/
-    	
+    		disableElement(that, that.cropButton);
+    		that.tagStarted = true; 
+			that.tagger.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);	
+    	}
     }
     
     var setupResize = function (that) {
@@ -126,15 +122,16 @@ var fluid_1_4 = fluid_1_4 || {};
     	if (that.resizeStarted) {
     		that.resizeStarted = false;
     		enableElement(that, that.cropButton);
-    		hideElement (that, that.resizeOptions);
-    		
+    		enableElement(that, that.tagButton);
+    		hideElement (that, that.resizeOptions);    		
     	} else {
     		disableElement(that, that.cropButton);
     		that.resizeStarted = true;
     		showElement (that, that.resizeOptions);
     		disableElement(that, that.widthSpinner);
     		disableElement(that, that.heightSpinner);
-    		disableElement(that, that.percSpinner);	
+    		disableElement(that, that.percSpinner);
+    		disableElement(that, that.tagButton);	
     	}
     }
     
@@ -185,6 +182,7 @@ var fluid_1_4 = fluid_1_4 || {};
     	that.resizeOptions = that.locate("resizeOptions");
     	
     	that.cropStarted = false;
+    	that.tagStarted = false;
     	that.resizeStarted = false;
     	that.cropper = fluid.cropperUI(that.container);
     	that.tagger = fluid.taggerUI(that.container);
