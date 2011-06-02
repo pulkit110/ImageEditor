@@ -55,6 +55,10 @@ var fluid_1_4 = fluid_1_4 || {};
             setupCrop(that);
         });
         
+        that.locate("tagButton").click(function () {
+            setupTag(that);
+        });
+        
         that.locate("resizeButton").click(function () {
             setupResize(that);
         });
@@ -94,6 +98,26 @@ var fluid_1_4 = fluid_1_4 || {};
     		that.cropStarted = true;
 			that.cropperID = that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);	
     	}
+    	
+    }
+    
+    var setupTag = function (that) {
+    	alert("Sapan");
+    	that.tagger.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);
+    	/*if (that.cropStarted) {
+    		that.cropStarted = false;
+    		enableElement(that, that.resizeButton);
+    		clearInterval(that.cropperID);
+    		that.cropper.reset();
+    		clearCanvas (that);
+    		//cropImage(that, startX, startY, w, h);
+    		drawImage (that);
+    		
+    	} else {
+    		disableElement(that, that.resizeButton);
+    		that.cropStarted = true;
+			that.cropperID = that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);	
+    	}*/
     	
     }
     
@@ -152,6 +176,7 @@ var fluid_1_4 = fluid_1_4 || {};
     	that.menuBar = that.locate("menuBar");
     	that.resizeButton = that.locate("resizeButton");
     	that.cropButton = that.locate("cropButton");
+    	that.tagButton = that.locate("tagButton");
     	that.widthSpinner = that.locate("widthSpinner");
     	that.heightSpinner = that.locate("heightSpinner");
     	that.percSpinner = that.locate("percSpinner");
@@ -162,6 +187,7 @@ var fluid_1_4 = fluid_1_4 || {};
     	that.cropStarted = false;
     	that.resizeStarted = false;
     	that.cropper = fluid.cropperUI(that.container);
+    	that.tagger = fluid.taggerUI(that.container);
     	
     	that.imageCanvas.addClass (that.options.styles.border);
     	
@@ -219,6 +245,7 @@ var fluid_1_4 = fluid_1_4 || {};
             resizeButton: ".flc-image-editor-button-resize", //required, Resize Button
             resizeButton: ".flc-image-editor-button-resize", //required, Resize Button
             cropButton: ".flc-image-editor-button-crop", //required, Crop Button
+            tagButton: ".flc-image-editor-button-tag", //required, Crop Button
             widthSpinner: ".flc-image-editor-resize-spinner-width", //required, Resize width spinner
             heightSpinner: ".flc-image-editor-resize-spinner-height", //required, Resize height spinner
             percSpinner: ".flc-image-editor-resize-spinner-percentage", //required, Resize height spinner
