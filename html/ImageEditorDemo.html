@@ -39,8 +39,10 @@
         
         <script type="text/javascript" src="../js/ImageEditorDemo.js"></script>
         
+        <!-- Cropper UI dependencies -->
+        <script type="text/javascript" src="../../cropperUI/js/CropperUI.js"></script>
+        
         <!-- Image Editor dependencies -->
-        <script type="text/javascript" src="../js/CropperUI.js"></script>
         <script type="text/javascript" src="../js/ImageEditor.js"></script>        
         
     </head>
@@ -50,6 +52,25 @@
     	<!-- <div id="image-space"><canvas class="flc-image-canvas fl-image-canvas"></canvas></div> -->
     	<div id="image-space">
     		<canvas class="flc-image-canvas" width=750px height=750px></canvas>
+    		
+    		<div class="fl-image-editor-resize-options">
+    			<label>
+				    <input type="radio" name="flc-image-editor-resize-radios" class="flc-image-editor-resize-radio-custom" value="radio"/>
+		    		Custom width x height
+			    </label>
+			    <br />
+			    <input class="flc-image-editor-resize-spinner-width" type="number" min="0" step="1">
+			    &nbsp; x &nbsp; 
+    			<input class="flc-image-editor-resize-spinner-height" type="number" min="0" step="1">
+			    <br /><br />
+				<label>
+				    <input type="radio" name="flc-image-editor-resize-radios" class="flc-image-editor-resize-radio-percentage" value="radio"  />
+				    Percentage of original width x height
+			    </label>
+				<br />
+				<input class="flc-image-editor-resize-spinner-percentage" type="number" min="0" max="100" step="1" value="100"> &nbsp;%
+
+			</div>
     		
     		<div class="fl-image-editor-buttons">
 	    		<button type="button" class="flc-image-editor-button-resize fl-image-editor-button-resize">Resize</button>

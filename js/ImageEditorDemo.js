@@ -3,7 +3,10 @@ jQuery(document).ready(function () {
     var templateURLSelector = "../../uploader/html/Uploader.html .fl-uploader";
     $("#uploader-contents").load(templateURLSelector, null, function () {
         
-    	var myImageEditor = fluid.imageEditor("#image-space");
+    	var myImageEditor = fluid.imageEditor("#image-space", {
+    		demo: true,
+    		demoImageURL: "../temp/DemoImage.jpg"
+    	});
     	
         // Initialize the Uploader
         var myUpload = fluid.uploader(".flc-uploader", {

@@ -54,6 +54,29 @@ var fluid_1_4 = fluid_1_4 || {};
         that.locate("cropButton").click(function () {
             setupCrop(that);
         });
+        
+        that.locate("resizeButton").click(function () {
+            setupResize(that);
+        });
+        
+        that.resizeRadioCustom.change(function () {
+        	that.resizeRadioCustomFlag = true;
+        	that.resizeRadioPercFlag = false;
+            enableElement(that, that.widthSpinner);
+    		enableElement(that, that.heightSpinner);
+    		disableElement(that, that.percSpinner);
+    		that.widthSpinner.get()[0].value = that.image.width;
+    		that.heightSpinner.get()[0].value = that.image.height;
+        });
+        
+        that.resizeRadioPerc.change(function () {
+        	that.resizeRadioCustomFlag = false;
+        	that.resizeRadioPercFlag = true;
+            enableElement(that, that.percSpinner);
+            disableElement(that, that.widthSpinner);
+    		disableElement(that, that.heightSpinner);
+			that.percSpinner.get()[0].value = 100;
+        });
     };
 
     var setupCrop = function (that) {
@@ -61,19 +84,42 @@ var fluid_1_4 = fluid_1_4 || {};
     		that.cropStarted = false;
     		enableElement(that, that.resizeButton);
     		clearInterval(that.cropperID);
-    		clear (that);
+    		that.cropper.reset();
+    		clearCanvas (that);
+    		//cropImage(that, startX, startY, w, h);
     		drawImage (that);
-    		Cropper.reset();
+    		
     	} else {
     		disableElement(that, that.resizeButton);
     		that.cropStarted = true;
-			Cropper.init(that);	
+			that.cropperID = that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);	
     	}
     	
     }
     
-    function clear(that) {
-		that.imageCanvas.get()[0].getContext('2d').clearRect(0, 0, that.imageCanvas.width, that.imageCanvas.height);
+    var setupResize = function (that) {
+
+    	if (that.resizeStarted) {
+    		that.resizeStarted = false;
+    		enableElement(that, that.cropButton);
+    		hideElement (that, that.resizeOptions);
+    		
+    	} else {
+    		disableElement(that, that.cropButton);
+    		that.resizeStarted = true;
+    		showElement (that, that.resizeOptions);
+    		disableElement(that, that.widthSpinner);
+    		disableElement(that, that.heightSpinner);
+    		disableElement(that, that.percSpinner);	
+    	}
+    }
+    
+    function clearCanvas(that) {
+		var imageCanvas = that.imageCanvas.get()[0];
+		var imageCanvasContext = imageCanvas.getContext('2d');	// Obtain the context
+		var h = imageCanvas.height;
+		var w = imageCanvas.width;
+		imageCanvasContext.clearRect(0, 0, w, h);
 	}
 	
 	function drawImage (that) {
@@ -106,16 +152,29 @@ var fluid_1_4 = fluid_1_4 || {};
     	that.menuBar = that.locate("menuBar");
     	that.resizeButton = that.locate("resizeButton");
     	that.cropButton = that.locate("cropButton");
+    	that.widthSpinner = that.locate("widthSpinner");
+    	that.heightSpinner = that.locate("heightSpinner");
+    	that.percSpinner = that.locate("percSpinner");
+    	that.resizeRadioCustom = that.locate("resizeRadioCustom");
+    	that.resizeRadioPerc = that.locate("resizeRadioPerc");
+    	that.resizeOptions = that.locate("resizeOptions");
     	
     	that.cropStarted = false;
+    	that.resizeStarted = false;
+    	that.cropper = fluid.cropperUI(that.container);
     	
     	that.imageCanvas.addClass (that.options.styles.border);
     	
     	disableElement(that, that.cropButton);
     	disableElement(that, that.resizeButton);
     	
+    	hideElement(that, that.resizeOptions);
+    	
     	bindDOMEvents(that);
     	
+    	if (that.options.demo && that.options.demoImageURL) {
+    		that.setImage(that.options.demoImageURL);
+    	}
         // Uploader uses application-style keyboard conventions, so give it a suitable role.
         //that.container.attr("role", "application");
     };
@@ -129,10 +188,9 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.imageEditor = function (container, options) {
         var that = fluid.initView("fluid.imageEditor", container, options);
 
-        setupImageEditor(that);
-        
-        that.setImage = function (imageURL) {
+		that.setImage = function (imageURL) {
         	
+        	clearCanvas(that);
         	that.image = new Image();		// Create a new img element
         	
         	that.image.onload = function() {
@@ -144,6 +202,8 @@ var fluid_1_4 = fluid_1_4 || {};
         	}
         	that.image.src = imageURL;			// Set the source path
         }
+        
+        setupImageEditor(that);
         
 		//that.displayElement.hide();
 
@@ -157,7 +217,14 @@ var fluid_1_4 = fluid_1_4 || {};
             imageCanvas: ".flc-image-canvas", // required, the canvas element that shows the image
             menuBar: ".flc-menu-bar", //required, provides different functions
             resizeButton: ".flc-image-editor-button-resize", //required, Resize Button
-            cropButton: ".flc-image-editor-button-crop" //required, Crop Button
+            resizeButton: ".flc-image-editor-button-resize", //required, Resize Button
+            cropButton: ".flc-image-editor-button-crop", //required, Crop Button
+            widthSpinner: ".flc-image-editor-resize-spinner-width", //required, Resize width spinner
+            heightSpinner: ".flc-image-editor-resize-spinner-height", //required, Resize height spinner
+            percSpinner: ".flc-image-editor-resize-spinner-percentage", //required, Resize height spinner
+            resizeRadioCustom: ".flc-image-editor-resize-radio-custom", //required, Resize Custom radio button
+            resizeRadioPerc: ".flc-image-editor-resize-radio-percentage", //required, Resize Percentage radio button
+            resizeOptions: ".fl-image-editor-resize-options" //resize options div
         },
         
         styles: {
@@ -174,6 +241,7 @@ var fluid_1_4 = fluid_1_4 || {};
             ariaDoneText: "Progress is complete."
         },
         
+        demo: false,
         // progress display and hide animations, use the jQuery animation primatives, set to false to use no animation
         // animations must be symetrical (if you hide with width, you'd better show with width) or you get odd effects
         // see jQuery docs about animations to customize
