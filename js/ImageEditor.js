@@ -109,12 +109,13 @@ var fluid_1_4 = fluid_1_4 || {};
     		enableElement(that, that.resizeButton);    		
     		that.tagger.reset();
     		clearCanvas (that);
-    		drawImage (that);    		
+    		drawImage (that);
+    		that.tagger.showAnnotations();
     	} else {
     		disableElement(that, that.resizeButton);
     		disableElement(that, that.cropButton);
     		that.tagStarted = true; 
-			that.tagger.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);	
+			that.tagger.init(that.imageCanvas, that.resizeFactor, that.image, that.imageX, that.imageY);	
     	}
     }
     
