@@ -107,7 +107,7 @@ var fluid_1_4 = fluid_1_4 || {};
     		that.tagStarted = false;
     		enableElement(that, that.cropButton);
     		enableElement(that, that.resizeButton);    		
-    		that.tagger.reset();
+    		that.tagger.doneTagging();
     		clearCanvas (that);
     		drawImage (that);
     		that.tagger.showAnnotations();
@@ -216,6 +216,7 @@ var fluid_1_4 = fluid_1_4 || {};
 
 		that.setImage = function (imageURL) {
         	
+        	that.tagger.reset();
         	clearCanvas(that);
         	that.image = new Image();		// Create a new img element
         	
@@ -268,39 +269,7 @@ var fluid_1_4 = fluid_1_4 || {};
             ariaDoneText: "Progress is complete."
         },
         
-        demo: false,
-        // progress display and hide animations, use the jQuery animation primatives, set to false to use no animation
-        // animations must be symetrical (if you hide with width, you'd better show with width) or you get odd effects
-        // see jQuery docs about animations to customize
-        showAnimation: {
-            params: {
-                opacity: "show"
-            }, 
-            duration: "slow",
-            //callback has been deprecated and will be removed as of 1.5, instead use onProgressBegin event 
-            callback: null 
-        }, // equivalent of $().fadeIn("slow")
-        
-        hideAnimation: {
-            params: {
-                opacity: "hide"
-            }, 
-            duration: "slow", 
-            //callback has been deprecated and will be removed as of 1.5, instead use afterProgressHidden event 
-            callback: null
-        }, // equivalent of $().fadeOut("slow")
-        
-        events: {            
-            onProgressBegin: null,
-            afterProgressHidden: null            
-        },
-
-        minWidth: 5, // 0 length indicators can look broken if there is a long pause between updates
-        delay: 0, // the amount to delay the fade out of the progress
-        speed: 200, // default speed for animations, pretty fast
-        animate: "forward", // suppport "forward", "backward", and "both", any other value is no animation either way
-        initiallyHidden: true, // supports progress indicators which may always be present
-        updatePosition: false
+        demo: false
     });
     //we'll put our default options here
 
