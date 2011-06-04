@@ -95,6 +95,7 @@ var fluid_1_4 = fluid_1_4 || {};
     		
     	} else {
     		disableElement(that, that.resizeButton);
+    		disableElement(that, that.tagButton);
     		that.cropStarted = true;
 			that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);	
     	}
