@@ -104,14 +104,41 @@ var fluid_1_4 = fluid_1_4 || {};
     
     var setupTag = function (that) {
     	if (that.tagStarted) {
+    		//Done tagging
+    		that.tagButton.text(that.options.buttons.tag);
     		that.tagStarted = false;
     		enableElement(that, that.cropButton);
     		enableElement(that, that.resizeButton);    		
     		that.tagger.doneTagging();
     		clearCanvas (that);
     		drawImage (that);
-    		that.tagger.showAnnotations();
+
+    		var nbAnnotations = that.tagger.getNbAnnotations();
+    		that.annotationsShown = false;
+    		
+    		if (nbAnnotations != 0) {
+    			showElement(that, that.locate("showAnnotation"));
+    			var showAnnotationLink = ' <a href="" class="' + that.options.strings.showAnnotationsLink + '">(show)</a>';
+    			if (nbAnnotations == 1) {
+    				that.locate("showAnnotation").html(that.options.strings.showAnnotation + showAnnotationLink);
+    			} else {
+    				that.locate("showAnnotation").html(that.options.strings.showAnnotations.replace("%s", nbAnnotations) + showAnnotationLink);
+    			}
+    			that.locate("showAnnotationsLink").bind("click", function() {
+    				if (that.annotationsShown) {
+    					hideAnnotations(that);
+    				} else {
+    					showAnnotations(that);
+    				}
+    				return false;
+    			});
+    		} else {
+    			hideElement(that, that.locate("showAnnotation"));
+    		}
+
     	} else {
+    		//Tagging started
+    		that.tagButton.text(that.options.buttons.doneTagging);
     		disableElement(that, that.resizeButton);
     		disableElement(that, that.cropButton);
     		that.tagStarted = true; 
@@ -135,6 +162,18 @@ var fluid_1_4 = fluid_1_4 || {};
     		disableElement(that, that.percSpinner);
     		disableElement(that, that.tagButton);	
     	}
+    }
+    
+    var showAnnotations = function(that) {
+    	that.tagger.showAnnotations();
+    	that.annotationsShown = true;
+    	that.locate("showAnnotationsLink").text("(hide)");
+    }
+    
+    var hideAnnotations = function(that) {
+    	that.tagger.hideAnnotations();
+    	that.annotationsShown = false;
+    	that.locate("showAnnotationsLink").text("(show)");
     }
     
     function clearCanvas(that) {
@@ -234,7 +273,6 @@ var fluid_1_4 = fluid_1_4 || {};
         
 		//that.displayElement.hide();
 
-
         return that;
     };
 
@@ -252,7 +290,9 @@ var fluid_1_4 = fluid_1_4 || {};
             percSpinner: ".flc-image-editor-resize-spinner-percentage", //required, Resize height spinner
             resizeRadioCustom: ".flc-image-editor-resize-radio-custom", //required, Resize Custom radio button
             resizeRadioPerc: ".flc-image-editor-resize-radio-percentage", //required, Resize Percentage radio button
-            resizeOptions: ".fl-image-editor-resize-options" //resize options div
+            resizeOptions: ".fl-image-editor-resize-options", //resize options div
+            showAnnotation: ".fl-image-editor-show-annotation",
+            showAnnotationsLink: ".flc-image-editor-show-annotations-link"
         },
         
         styles: {
@@ -262,8 +302,16 @@ var fluid_1_4 = fluid_1_4 || {};
             border: "fl-image-editor-border"
         },
         
+        buttons: {
+        	doneTagging: "Done Tagging",
+        	tag: "Tag"
+        },
+        
         //TODO: Change as needed
         strings: {
+        	showAnnotation: "The image has 1 annotation",
+        	showAnnotations: "The image has %s annotations",
+        	showAnnotationsLink: "flc-image-editor-show-annotations-link",
             //Empty value for ariaBusyText will default to aria-valuenow.
             ariaBusyText: "Progress is %percentComplete percent complete",
             ariaDoneText: "Progress is complete."
