@@ -46,10 +46,6 @@ var fluid_1_4 = fluid_1_4 || {};
     };
     
     var bindDOMEvents = function (that) {
-        that.locate("resizeButton").click(function () {
-        	//TODO: Bind resize event
-            //that.start();
-        });
 
         that.locate("cropButton").click(function () {
             setupCrop(that);
@@ -127,10 +123,20 @@ var fluid_1_4 = fluid_1_4 || {};
 
     	if (that.resizeStarted) {
     		that.resizeStarted = false;
+    		
+    		if (that.resizeRadioPercFlag) {
+    			var resizedImageDataURL = resizeWithPerc (that, that.percSpinner.get()[0].value);
+    			that.setImage(resizedImageDataURL);
+    		}
+    		
     		enableElement(that, that.cropButton);
     		enableElement(that, that.tagButton);
     		hideElement (that, that.resizeOptions);    		
     	} else {
+    		//uncheck radio buttons if already checked
+    		that.resizeRadioCustom.get()[0].checked = false;
+    		that.resizeRadioPerc.get()[0].checked = false;
+    		
     		disableElement(that, that.cropButton);
     		that.resizeStarted = true;
     		showElement (that, that.resizeOptions);
@@ -179,6 +185,21 @@ var fluid_1_4 = fluid_1_4 || {};
 		
 		imageCanvasContext.drawImage(that.image, that.imageX, that.imageY, that.image.width/that.resizeFactor, that.image.height/that.resizeFactor); // Draw image on canvas
 
+	}
+	
+	var resizeWithPerc = function (that, resizePerc) {
+		
+		var newW = that.image.width*resizePerc/100;
+		var newH = that.image.height*resizePerc/100;
+		//Create canvas to get cropped image pixels
+		var imageManipulationCanvas = document.createElement('canvas');
+		imageManipulationCanvas.width = newW;
+		imageManipulationCanvas.height = newH;
+		
+		var imageManipulationCtx = imageManipulationCanvas.getContext('2d');
+		imageManipulationCtx.drawImage(that.image, 0, 0, newW, newH); // Draw resized image on temporary canvas
+		var resizedImageDataURL = imageManipulationCanvas.toDataURL();	//get DataURL for cropped image
+		return resizedImageDataURL;
 	}
 	
     var setupImageEditor = function (that) {
