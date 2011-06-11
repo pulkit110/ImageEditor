@@ -127,6 +127,9 @@ var fluid_1_4 = fluid_1_4 || {};
     		if (that.resizeRadioPercFlag) {
     			var resizedImageDataURL = resizeWithPerc (that, that.percSpinner.get()[0].value);
     			that.setImage(resizedImageDataURL);
+    		} else if (that.resizeRadioCustomFlag) {
+    			var resizedImageDataURL = resizeWithCustomWH (that, that.widthSpinner.get()[0].value, that.heightSpinner.get()[0].value);
+    			that.setImage(resizedImageDataURL);
     		}
     		
     		enableElement(that, that.cropButton);
@@ -201,6 +204,20 @@ var fluid_1_4 = fluid_1_4 || {};
 		var resizedImageDataURL = imageManipulationCanvas.toDataURL();	//get DataURL for cropped image
 		return resizedImageDataURL;
 	}
+	
+	var resizeWithCustomWH = function (that, resizeW, resizeH) {
+		
+		//Create canvas to get cropped image pixels
+		var imageManipulationCanvas = document.createElement('canvas');
+		imageManipulationCanvas.width = resizeW;
+		imageManipulationCanvas.height = resizeH;
+		
+		var imageManipulationCtx = imageManipulationCanvas.getContext('2d');
+		imageManipulationCtx.drawImage(that.image, 0, 0, resizeW, resizeH); // Draw resized image on temporary canvas
+		var resizedImageDataURL = imageManipulationCanvas.toDataURL();	//get DataURL for cropped image
+		return resizedImageDataURL;
+	}
+	
 	
     var setupImageEditor = function (that) {
         
