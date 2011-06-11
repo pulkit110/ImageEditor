@@ -88,10 +88,8 @@ var fluid_1_4 = fluid_1_4 || {};
     		that.cropStarted = false;
     		enableElement(that, that.resizeButton);
     		enableElement(that, that.tagButton);
-    		that.cropper.reset();
-    		clearCanvas (that);
-    		//cropImage(that, startX, startY, w, h);
-    		drawImage (that);
+    		var croppedImageDataURL = that.cropper.reset();
+    		that.setImage(croppedImageDataURL);
     		
     	} else {
     		disableElement(that, that.resizeButton);
@@ -171,18 +169,16 @@ var fluid_1_4 = fluid_1_4 || {};
 		if (that.image.height > imageCanvas.height || that.image.width > imageCanvas.width) {
 			var heightRatio = that.image.height/imageCanvas.height;
 			var widthRatio = that.image.width/imageCanvas.width;
-			
 			that.resizeFactor = (heightRatio < widthRatio)?widthRatio:heightRatio;
-			
-			that.imageX = (imageCanvas.width - that.image.width/that.resizeFactor)/2;
-			that.imageY = (imageCanvas.height - that.image.height/that.resizeFactor)/2;
-			
-			imageCanvasContext.drawImage(that.image, that.imageX, that.imageY, that.image.width/that.resizeFactor, that.image.height/that.resizeFactor);
-			
 		} else {
 			that.resizeFactor = 1;
-			imageCanvasContext.drawImage(img, 0, 0);
 		}
+		
+		that.imageX = (imageCanvas.width - that.image.width/that.resizeFactor)/2;
+		that.imageY = (imageCanvas.height - that.image.height/that.resizeFactor)/2;
+		
+		imageCanvasContext.drawImage(that.image, that.imageX, that.imageY, that.image.width/that.resizeFactor, that.image.height/that.resizeFactor); // Draw image on canvas
+
 	}
 	
     var setupImageEditor = function (that) {
