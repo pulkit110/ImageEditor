@@ -47,7 +47,7 @@ var fluid_1_4 = fluid_1_4 || {};
     
     var TYPE_RESIZE = 1;
     var TYPE_CROP = 2;
-    
+        
     var bindDOMEvents = function (that) {
 
         that.locate("cropButton").click(function () {
@@ -87,8 +87,11 @@ var fluid_1_4 = fluid_1_4 || {};
     		that.cropStarted = false;
     		enableElement(that, that.resizeButton);
     		enableElement(that, that.tagButton);
-    		var croppedImageDataURL = that.cropper.reset();
-    		that.setImage(croppedImageDataURL);
+    		var croppingReturnValues = that.cropper.reset();
+    		var croppedImageDataURL = croppingReturnValues[0];
+    		that.croppingDimensions = croppingReturnValues[1];
+    		
+    		that.setImage(croppedImageDataURL, TYPE_CROP);
     		
     	} else {
     		disableElement(that, that.resizeButton);
@@ -290,6 +293,8 @@ var fluid_1_4 = fluid_1_4 || {};
         		
         		if (isResizedORCropped == TYPE_RESIZE) {
         			that.tagger.adjustTagsForResize (that.imageCanvas.width(), that.imageCanvas.height(), that.resizeFactor, that.image, that.imageX, that.imageY);
+        		} else if (isResizedORCropped == TYPE_CROP) {
+        			that.tagger.adjustTagsForCrop (that.imageCanvas.width(), that.imageCanvas.height(), that.resizeFactor, that.image, that.imageX, that.imageY, that.croppingDimensions);
         		}
         		
         		enableElement(that, that.cropButton);
