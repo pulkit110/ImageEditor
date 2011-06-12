@@ -45,6 +45,9 @@ var fluid_1_4 = fluid_1_4 || {};
         elm.addClass(that.options.styles.hidden);
     };
     
+    var TYPE_RESIZE = 1;
+    var TYPE_CROP = 2;
+    
     var bindDOMEvents = function (that) {
 
         that.locate("cropButton").click(function () {
@@ -124,13 +127,13 @@ var fluid_1_4 = fluid_1_4 || {};
     	if (that.resizeStarted) {
     		that.resizeStarted = false;
     		
+    		var resizedImageDataURL;
     		if (that.resizeRadioPercFlag) {
-    			var resizedImageDataURL = resizeWithPerc (that, that.percSpinner.get()[0].value);
-    			that.setImage(resizedImageDataURL);
+    			resizedImageDataURL = resizeWithPerc (that, that.percSpinner.get()[0].value);
     		} else if (that.resizeRadioCustomFlag) {
-    			var resizedImageDataURL = resizeWithCustomWH (that, that.widthSpinner.get()[0].value, that.heightSpinner.get()[0].value);
-    			that.setImage(resizedImageDataURL);
+    			resizedImageDataURL = resizeWithCustomWH (that, that.widthSpinner.get()[0].value, that.heightSpinner.get()[0].value);
     		}
+    		that.setImage(resizedImageDataURL, TYPE_RESIZE);
     		
     		enableElement(that, that.cropButton);
     		enableElement(that, that.tagButton);
@@ -175,19 +178,25 @@ var fluid_1_4 = fluid_1_4 || {};
 		var imageCanvasContext = imageCanvas.getContext('2d');	// Obtain the context
 		
 		// Maintain aspect ratio while resizing larger image to smaller canvas.
-		if (that.image.height > imageCanvas.height || that.image.width > imageCanvas.width) {
-			var heightRatio = that.image.height/imageCanvas.height;
-			var widthRatio = that.image.width/imageCanvas.width;
+		if (that.image.height > that.options.originalCanvasHeight || that.image.width > that.options.originalCanvasWidth) {
+			var heightRatio = that.image.height/that.options.originalCanvasHeight;
+			var widthRatio = that.image.width/that.options.originalCanvasHeight;
 			that.resizeFactor = (heightRatio < widthRatio)?widthRatio:heightRatio;
 		} else {
 			that.resizeFactor = 1;
 		}
 		
-		that.imageX = (imageCanvas.width - that.image.width/that.resizeFactor)/2;
-		that.imageY = (imageCanvas.height - that.image.height/that.resizeFactor)/2;
+		//that.imageX = (imageCanvas.width - that.image.width/that.resizeFactor)/2;
+		//that.imageY = (imageCanvas.height - that.image.height/that.resizeFactor)/2;
+		
+		imageCanvas.height = that.image.height/that.resizeFactor;
+		imageCanvas.width = that.image.width/that.resizeFactor;
+		
+		that.imageX = 0;
+		that.imageY = 0;
 		
 		imageCanvasContext.drawImage(that.image, that.imageX, that.imageY, that.image.width/that.resizeFactor, that.image.height/that.resizeFactor); // Draw image on canvas
-
+		
 	}
 	
 	var resizeWithPerc = function (that, resizePerc) {
@@ -266,15 +275,22 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.imageEditor = function (container, options) {
         var that = fluid.initView("fluid.imageEditor", container, options);
 
-		that.setImage = function (imageURL) {
+		that.setImage = function (imageURL, isResizedORCropped) {
         	
-        	that.tagger.reset();
+        	if (!isResizedORCropped) {
+        		that.tagger.reset();
+        	}
+        	
         	clearCanvas(that);
         	that.image = new Image();		// Create a new img element
         	
         	that.image.onload = function() {
 
         		drawImage (that);
+        		
+        		if (isResizedORCropped == TYPE_RESIZE) {
+        			that.tagger.adjustTagsForResize (that.imageCanvas.width(), that.imageCanvas.height(), that.resizeFactor, that.image, that.imageX, that.imageY);
+        		}
         		
         		enableElement(that, that.cropButton);
         		enableElement(that, that.resizeButton);
@@ -354,7 +370,9 @@ var fluid_1_4 = fluid_1_4 || {};
             ariaDoneText: "Progress is complete."
         },
         
-        demo: false
+        demo: false,
+        originalCanvasHeight: 750,
+        originalCanvasWidth: 750
     });
     //we'll put our default options here
 
