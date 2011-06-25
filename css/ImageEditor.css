@@ -29,7 +29,13 @@
 
 .fl-image-editor-buttons {
     margin-top: 1em;
-    text-align:right;
+}
+
+/* General Menu */
+.fl-image-editor-menu {
+	opacity: 0.7;
+	color: #ffffff;
+	margin-left: 10px;
 }
 
 /* General Buttons */
@@ -45,6 +51,8 @@
     outline: none;
     cursor: pointer;
     width: 8.4em;
+    background-color: #696969;
+    border-color: #006838;
 }
 
 .fl-image-editor-buttons button:focus {
@@ -52,8 +60,6 @@
 }
 
 .fl-image-editor-buttons .fl-image-editor-button-resize {
-    background-color: #74B74A;
-    border-color: #006838;
 }
 
 .fl-image-editor-buttons .fl-image-editor-button-resize:hover {
@@ -62,8 +68,6 @@
 }
 
 .fl-image-editor-buttons .fl-image-editor-button-crop {
-    background-color: #74B74A;
-    border-color: #006838;
 }
 
 .fl-image-editor-buttons .fl-image-editor-button-crop:hover {
@@ -78,3 +82,53 @@
     cursor: auto;
 }
 
+.flc-image-canvas {
+    margin-top: 1em;
+    text-align: center;	
+	margin: 1em auto;
+}
+
+.flc-image-canvas-div {
+	width: 750px;
+	height: 750px;
+	line-height: 750px;
+	vertical-align : middle;
+	text-align: center;
+	margin: 1em auto;
+}
+
+.fl-image-editor-options {
+    background-color: #696969;
+}
+
+.fl-image-editor-crop-options {
+	text-indent: 5px;
+}
+
+.fl-image-editor-resize-options {
+}
+
+.fl-image-editor-tag-options {
+}
+
+.fl-image-editor-button-crop-confirm {
+    background-image: url(../images/tick.png);
+    cursor: pointer; 
+    border: 1px solid transparent;
+    height: 20px;
+    width: 20px;
+    overflow: hidden;
+    background-color: transparent;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: 1px 1px;
+    padding: 0;
+    margin: 0;
+}
+
+.fl-image-editor-button-crop-confirm:hover, tr:focus {
+    border: 1px solid #CCC;
+    background-color: #FFF;
+    -moz-border-radius: 20px;
+    -webkit-border-radius:20px;
+}

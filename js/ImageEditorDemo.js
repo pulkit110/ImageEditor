@@ -40,5 +40,10 @@ jQuery(document).ready(function () {
                 }
             }
         });
-    });	
+    });
+    
+    fluid.inlineEdits(".fl-image-editor-menu");	
+    
+    fluid.inlineEdits("#catalog-table");
+
 });

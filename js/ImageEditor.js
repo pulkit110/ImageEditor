@@ -77,23 +77,24 @@ var fluid_1_4 = fluid_1_4 || {};
 	};
 	
 	var setupCrop = function (that) {
-		if (that.cropStarted) {
-			that.cropStarted = false;
-			enableElement(that, that.resizeButton);
-			enableElement(that, that.tagButton);
-			var croppingReturnValues = that.cropper.reset();
-			var croppedImageDataURL = croppingReturnValues[0];
-			that.croppingDimensions = croppingReturnValues[1];
+		showElement(that, that.locate("cropOptions"));
+		
+		disableElement(that, that.resizeButton);
+		disableElement(that, that.tagButton);
+		that.cropStarted = true;
+		that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);
+	};
+	
+	var confirmCrop = function (that) {
+		hideElement(that, that.locate("cropOptions"));
 
-			that.setImage(croppedImageDataURL, TYPE_CROP);
-
-		} else {
-			disableElement(that, that.resizeButton);
-			disableElement(that, that.tagButton);
-			that.cropStarted = true;
-			that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);
-		}
-
+		that.cropStarted = false;
+		enableElement(that, that.resizeButton);
+		enableElement(that, that.tagButton);
+		var croppingReturnValues = that.cropper.reset();
+		var croppedImageDataURL = croppingReturnValues[0];
+		that.croppingDimensions = croppingReturnValues[1];
+		that.setImage(croppedImageDataURL, TYPE_CROP);
 	};
 	
 	var setupTag = function (that) {
@@ -193,6 +194,11 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.locate("resizeButton").click(function () {
 			setupResize(that);
 		});
+		
+		that.locate("cropConfirm").click(function () {
+			confirmCrop(that);
+		});
+		
 		that.resizeRadioCustom.change(function () {
 			that.resizeRadioCustomFlag = true;
 			that.resizeRadioPercFlag = false;
@@ -226,7 +232,7 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.percSpinner = that.locate("percSpinner");
 		that.resizeRadioCustom = that.locate("resizeRadioCustom");
 		that.resizeRadioPerc = that.locate("resizeRadioPerc");
-		that.resizeOptions = that.locate("resizeOptions");
+		that.resizeOptions = that.locate("resizeOptionsOld");
 
 		that.cropStarted = false;
 		that.tagStarted = false;
@@ -242,6 +248,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		disableElement(that, that.resizeButton);
 
 		hideElement(that, that.resizeOptions);
+		hideElement(that, that.locate("cropOptions"));
+		hideElement(that, that.locate("resizeOptions"));
+		hideElement(that, that.locate("tagOptions"));
 
 		bindDOMEvents(that);
 
@@ -325,12 +334,21 @@ var fluid_1_4 = fluid_1_4 || {};
 			resizeButton: ".flc-image-editor-button-resize", //required, Resize Button
 			cropButton: ".flc-image-editor-button-crop", //required, Crop Button
 			tagButton: ".flc-image-editor-button-tag", //required, Tag Button
+			cropOptions: ".fl-image-editor-crop-options", //required, Crop Options
+			resizeOptions: ".fl-image-editor-resize-options", //required, Resize Options
+			tagOptions: ".fl-image-editor-tag-options", //required, Tag Options
+			cropConfirm: ".fl-image-editor-button-crop-confirm", //required, Crop Confirm Button
+			resizeConfirm: ".fl-image-editor-button-resize-confirm", //required, Resize Confirm Button
+			tagConfirm: ".fl-image-editor-button-tag-confirm", //required, Tag Confirm Button
+			cropLocation: ".fl-image-editor-crop-location", //Crop Location
+			cropWidth: ".fl-image-editor-crop-width", //Crop Width
+			cropHeight: ".fl-image-editor-crop-height", //Crop Height
 			widthSpinner: ".flc-image-editor-resize-spinner-width", //required, Resize width spinner
 			heightSpinner: ".flc-image-editor-resize-spinner-height", //required, Resize height spinner
 			percSpinner: ".flc-image-editor-resize-spinner-percentage", //required, Resize height spinner
 			resizeRadioCustom: ".flc-image-editor-resize-radio-custom", //required, Resize Custom radio button
 			resizeRadioPerc: ".flc-image-editor-resize-radio-percentage", //required, Resize Percentage radio button
-			resizeOptions: ".fl-image-editor-resize-options", //resize options div
+			resizeOptionsOld: ".fl-image-editor-resize-options-old", //resize options div
 			showAnnotation: ".fl-image-editor-show-annotation",
 			showAnnotationsLink: ".flc-image-editor-show-annotations-link"
 		},
