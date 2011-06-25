@@ -77,17 +77,17 @@ var fluid_1_4 = fluid_1_4 || {};
 	};
 	
 	var setupCrop = function (that) {
-		showElement(that, that.locate("cropOptions"));
-		
-		disableElement(that, that.resizeButton);
-		disableElement(that, that.tagButton);
-		that.cropStarted = true;
-		that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);
+		if (!that.cropStarted) {
+			showElement(that, that.locate("cropOptions"));
+			disableElement(that, that.resizeButton);
+			disableElement(that, that.tagButton);
+			that.cropStarted = true;
+			that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);
+		}
 	};
 	
 	var confirmCrop = function (that) {
 		hideElement(that, that.locate("cropOptions"));
-
 		that.cropStarted = false;
 		enableElement(that, that.resizeButton);
 		enableElement(that, that.tagButton);
