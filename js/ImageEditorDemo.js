@@ -2,10 +2,13 @@ jQuery(document).ready(function () {
     // Load the Uploader's template via AJAX and inject it into this page.
     var templateURLSelector = "../../uploader/html/Uploader.html .fl-uploader";
     $("#uploader-contents").load(templateURLSelector, null, function () {
-        
+    
+    	var imageEditorMenuInlineEdits = fluid.inlineEdits(".fl-image-editor-menu");
+    	    
     	var myImageEditor = fluid.imageEditor("#image-space", {
     		demo: true,
-    		demoImageURL: "../temp/DemoImage.jpg"
+    		demoImageURL: "../temp/DemoImage.jpg",
+    		menuInlineEdits: imageEditorMenuInlineEdits
     	});
     	
         // Initialize the Uploader
@@ -42,8 +45,6 @@ jQuery(document).ready(function () {
         });
     });
     
-    fluid.inlineEdits(".fl-image-editor-menu");	
+    	
     
-    fluid.inlineEdits("#catalog-table");
-
 });

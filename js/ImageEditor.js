@@ -217,7 +217,25 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.percSpinner.get()[0].value = 100;
 		});
 	};
-		
+	
+	var manageInlineEdits = function (that, newValue, oldValue, editNode, viewNode) { 
+		if (that.locate("cropLocation").get(0) === viewNode) {
+			that.cropper.setLocation(newValue);
+		} else if (that.locate("cropWidth").get(0) === viewNode) {
+			that.cropper.setWidth(parseFloat(newValue));
+		} else if (that.locate("cropHeight").get(0) === viewNode) {
+			that.cropper.setHeight(parseFloat(newValue));
+		}
+	};
+	
+	var updateCropHeight = function (that, newHeight) {
+		that.locate("cropHeight").get(0).textContent = Math.round(newHeight);
+	};
+	
+	var updateCropWidth = function (that, newWidth) {
+		that.locate("cropWidth").get(0).textContent = Math.round(newWidth);
+	};
+	
 	var setupImageEditor = function (that) {
 
 		// Inject canvas element to the container
@@ -253,7 +271,22 @@ var fluid_1_4 = fluid_1_4 || {};
 		hideElement(that, that.locate("tagOptions"));
 
 		bindDOMEvents(that);
-
+		
+		for (var i = 0; i < that.options.menuInlineEdits.length; ++i) {
+			var menuInlineEdit = that.options.menuInlineEdits[i];
+			menuInlineEdit.events.onFinishEdit.addListener (function (newValue, oldValue, editNode, viewNode) {
+				manageInlineEdits(that, newValue, oldValue, editNode, viewNode)
+			});
+		}
+		
+		that.cropper.events.onChangeHeight.addListener (function (newHeight) {
+			updateCropHeight(that, newHeight);
+		});
+		
+		that.cropper.events.onChangeWidth.addListener (function (newWidth) {
+			updateCropWidth(that, newWidth);
+		});
+			
 		if (that.options.demo && that.options.demoImageURL) {
 			that.setImage(that.options.demoImageURL);
 		}
