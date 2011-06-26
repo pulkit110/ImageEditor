@@ -220,7 +220,11 @@ var fluid_1_4 = fluid_1_4 || {};
 	
 	var manageInlineEdits = function (that, newValue, oldValue, editNode, viewNode) { 
 		if (that.locate("cropLocation").get(0) === viewNode) {
-			that.cropper.setLocation(newValue);
+			var newLocation = newValue.split(',', 2);
+			if (newLocation.length == 2) {
+				that.cropper.setLocationX(parseFloat(newLocation[0]));
+				that.cropper.setLocationY(parseFloat(newLocation[1]));
+			}
 		} else if (that.locate("cropWidth").get(0) === viewNode) {
 			that.cropper.setWidth(parseFloat(newValue));
 		} else if (that.locate("cropHeight").get(0) === viewNode) {
@@ -234,6 +238,19 @@ var fluid_1_4 = fluid_1_4 || {};
 	
 	var updateCropWidth = function (that, newWidth) {
 		that.locate("cropWidth").get(0).textContent = Math.round(newWidth);
+	};
+	
+	var cropLocationX = 0;
+	var cropLocationY = 0;
+	
+	var updateCropLocationX = function (that, newLocationX) {
+		cropLocationX = newLocationX;
+		that.locate("cropLocation").get(0).textContent = Math.round(cropLocationX) + ", " + Math.round(cropLocationY);
+	};
+	
+	var updateCropLocationY = function (that, newLocationY) {
+		cropLocationY = newLocationY;
+		that.locate("cropLocation").get(0).textContent = Math.round(cropLocationX) + ", " + Math.round(cropLocationY);
 	};
 	
 	var setupImageEditor = function (that) {
@@ -287,6 +304,14 @@ var fluid_1_4 = fluid_1_4 || {};
 		
 		that.cropper.events.onChangeWidth.addListener(function (newWidth) {
 			updateCropWidth(that, newWidth);
+		});
+		
+		that.cropper.events.onChangeLocationX.addListener(function (newLocationX) {
+			updateCropLocationX(that, newLocationX);
+		});
+		
+		that.cropper.events.onChangeLocationY.addListener(function (newLocationY) {
+			updateCropLocationY(that, newLocationY);
 		});
 			
 		if (that.options.demo && that.options.demoImageURL) {
