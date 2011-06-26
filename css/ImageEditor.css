@@ -98,9 +98,11 @@
 }
 
 .fl-image-editor-resize-options {
+	text-indent: 5px;
 }
 
 .fl-image-editor-tag-options {
+	text-indent: 5px;
 }
 
 .fl-image-editor-button-crop-confirm {
@@ -119,6 +121,28 @@
 }
 
 .fl-image-editor-button-crop-confirm:hover, tr:focus {
+    border: 1px solid #CCC;
+    background-color: #FFF;
+    -moz-border-radius: 20px;
+    -webkit-border-radius:20px;
+}
+
+.fl-image-editor-button-resize-confirm {
+    background-image: url(../images/tick.png);
+    cursor: pointer; 
+    border: 1px solid transparent;
+    height: 20px;
+    width: 20px;
+    overflow: hidden;
+    background-color: transparent;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: 1px 1px;
+    padding: 0;
+    margin: 0;
+}
+
+.fl-image-editor-button-resize-confirm:hover, tr:focus {
     border: 1px solid #CCC;
     background-color: #FFF;
     -moz-border-radius: 20px;

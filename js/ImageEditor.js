@@ -76,11 +76,33 @@ var fluid_1_4 = fluid_1_4 || {};
 
 	};
 	
+	var resize = function (that, resizeW, resizeH) {
+
+		//Create canvas to get cropped image pixels
+		var imageManipulationCanvas = document.createElement('canvas');
+		imageManipulationCanvas.width = resizeW;
+		imageManipulationCanvas.height = resizeH;
+
+		var imageManipulationCtx = imageManipulationCanvas.getContext('2d');
+		imageManipulationCtx.drawImage(that.image, 0, 0, resizeW, resizeH); // Draw resized image on temporary canvas
+		var resizedImageDataURL = imageManipulationCanvas.toDataURL();	//get DataURL for cropped image
+		return resizedImageDataURL;
+	};
+	
+	var hideAllOptions = function (that) {
+		hideElement(that, that.locate("cropOptions"));
+		hideElement(that, that.locate("resizeOptions"));
+		hideElement(that, that.locate("tagOptions"));
+		that.cropper.reset(true);	//reset crop without actually cropping the image.
+		that.cropStarted = false;
+		that.resizeStarted = false;
+		that.tagStarted = false;
+	};
+	
 	var setupCrop = function (that) {
 		if (!that.cropStarted) {
+			hideAllOptions(that);
 			showElement(that, that.locate("cropOptions"));
-			disableElement(that, that.resizeButton);
-			disableElement(that, that.tagButton);
 			that.cropStarted = true;
 			that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);
 		}
@@ -89,8 +111,6 @@ var fluid_1_4 = fluid_1_4 || {};
 	var confirmCrop = function (that) {
 		hideElement(that, that.locate("cropOptions"));
 		that.cropStarted = false;
-		enableElement(that, that.resizeButton);
-		enableElement(that, that.tagButton);
 		var croppingReturnValues = that.cropper.reset();
 		var croppedImageDataURL = croppingReturnValues[0];
 		that.croppingDimensions = croppingReturnValues[1];
@@ -120,55 +140,25 @@ var fluid_1_4 = fluid_1_4 || {};
 		}
 	};
 	
-	var resize = function (that, resizeW, resizeH) {
-
-		//Create canvas to get cropped image pixels
-		var imageManipulationCanvas = document.createElement('canvas');
-		imageManipulationCanvas.width = resizeW;
-		imageManipulationCanvas.height = resizeH;
-
-		var imageManipulationCtx = imageManipulationCanvas.getContext('2d');
-		imageManipulationCtx.drawImage(that.image, 0, 0, resizeW, resizeH); // Draw resized image on temporary canvas
-		var resizedImageDataURL = imageManipulationCanvas.toDataURL();	//get DataURL for cropped image
-		return resizedImageDataURL;
+	var setupResize = function (that) {
+		if (!that.resizeStarted) {
+			hideAllOptions(that);
+			showElement(that, that.locate("resizeOptions"));
+			that.locate("resizeWidth").get(0).textContent = that.getImageWidth();
+			that.locate("resizeHeight").get(0).textContent = that.getImageHeight();
+			that.locate("resizeScale").get(0).textContent = '100%';
+			that.resizeStarted = true;
+		}
 	};
 	
-	var setupResize = function (that) {
-
-		if (that.resizeStarted) {
-			that.resizeStarted = false;
-
-			var resizedImageDataURL, newH, newW;
-			
-			if (that.resizeRadioPercFlag) {
-				var resizePerc = that.percSpinner.get()[0].value;
-				newW = that.image.width * resizePerc / 100;
-				newH = that.image.height * resizePerc / 100;
-			} else if (that.resizeRadioCustomFlag) {
-				newW = that.widthSpinner.get()[0].value;
-				newH = that.heightSpinner.get()[0].value;
-				
-			}
-			resizedImageDataURL = resize(that, newW, newH);
-			
-			that.setImage(resizedImageDataURL, TYPE_RESIZE);
-
-			enableElement(that, that.cropButton);
-			enableElement(that, that.tagButton);
-			hideElement(that, that.resizeOptions);
-		} else {
-			//uncheck radio buttons if already checked
-			that.resizeRadioCustom.get()[0].checked = false;
-			that.resizeRadioPerc.get()[0].checked = false;
-
-			disableElement(that, that.cropButton);
-			that.resizeStarted = true;
-			showElement(that, that.resizeOptions);
-			disableElement(that, that.widthSpinner);
-			disableElement(that, that.heightSpinner);
-			disableElement(that, that.percSpinner);
-			disableElement(that, that.tagButton);
-		}
+	var confirmResize = function (that) {
+		that.resizeStarted = false;
+		hideElement(that, that.locate("resizeOptions"));
+		var resizedImageDataURL, newH, newW;
+		newW = parseFloat(that.locate("resizeWidth").get(0).textContent);
+		newH = parseFloat(that.locate("resizeHeight").get(0).textContent);
+		resizedImageDataURL = resize(that, newW, newH);
+		that.setImage(resizedImageDataURL, TYPE_RESIZE);
 	};
 	
 	var showAnnotations = function (that) {
@@ -199,6 +189,10 @@ var fluid_1_4 = fluid_1_4 || {};
 			confirmCrop(that);
 		});
 		
+		that.locate("resizeConfirm").click(function () {
+			confirmResize(that);
+		});
+		
 		that.resizeRadioCustom.change(function () {
 			that.resizeRadioCustomFlag = true;
 			that.resizeRadioPercFlag = false;
@@ -218,7 +212,33 @@ var fluid_1_4 = fluid_1_4 || {};
 		});
 	};
 	
-	var manageInlineEdits = function (that, newValue, oldValue, editNode, viewNode) { 
+	var setResizeWidth = function (that, newWidth, oldWidth, isFixedRatio) {
+		var oldResizeHeight = parseFloat(that.locate("resizeHeight").get(0).textContent); 
+		if (isFixedRatio) {
+			that.locate("resizeHeight").get(0).textContent = Math.round(newWidth / oldWidth * oldResizeHeight);
+		}
+	};
+	
+	var setResizeHeight = function (that, newHeight, oldHeight, isFixedRatio) {
+		var oldResizeWidth = parseFloat(that.locate("resizeWidth").get(0).textContent); 
+		if (isFixedRatio) {
+			that.locate("resizeWidth").get(0).textContent = Math.round(newHeight / oldHeight * oldResizeWidth);
+		}
+	};
+	
+	var cancelInlineEdits = function (that) {
+		for (var i = 0; i < that.options.menuInlineEdits.length; ++i) {
+			that.options.menuInlineEdits[i].cancel();
+		}
+	};
+	
+	var manageInlineEdits = function (that, newValue, oldValue, editNode, viewNode) {
+		// Cancel the edit if new value not defined
+		if (newValue == "") {
+			cancelInlineEdits(that);
+			return;
+		} 
+		
 		if (that.locate("cropLocation").get(0) === viewNode) {
 			var newLocation = newValue.split(',', 2);
 			if (newLocation.length == 2) {
@@ -229,6 +249,15 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.cropper.setWidth(parseFloat(newValue), that.locate("cropFixedRatioOn").get(0).checked);
 		} else if (that.locate("cropHeight").get(0) === viewNode) {
 			that.cropper.setHeight(parseFloat(newValue), that.locate("cropFixedRatioOn").get(0).checked);
+		} else if (that.locate("resizeWidth").get(0) === viewNode) {
+			setResizeWidth(that, parseFloat(newValue), parseFloat(viewNode.textContent), true);
+		} else if (that.locate("resizeHeight").get(0) === viewNode) {
+			setResizeHeight(that, parseFloat(newValue), parseFloat(viewNode.textContent), true);
+		} else if (that.locate("resizeScale").get(0) === viewNode) {
+			var temp = newValue.indexOf("%");
+			newValue = newValue.substring(0, (newValue.indexOf("%") === -1) ? newValue.length : newValue.indexOf("%"));
+			that.locate("resizeWidth").get(0).textContent = newValue / 100 * that.getImageWidth();
+			that.locate("resizeHeight").get(0).textContent = newValue / 100 * that.getImageHeight();
 		}
 	};
 	
@@ -356,6 +385,14 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.image.src = imageURL;			// Set the source path
 		};
 		
+		that.getImageWidth = function () {
+			return that.image.width;
+		};
+		
+		that.getImageHeight = function () {
+			return that.image.height;
+		};
+		
 		that.annotationNbUpdater = function (nbAnnotations) {
 
 			if (!that.tagStarted && nbAnnotations !== 0) {
@@ -405,6 +442,9 @@ var fluid_1_4 = fluid_1_4 || {};
 			cropHeight: ".fl-image-editor-crop-height", //Crop Height
 			cropFixedRatioOn: ".fl-image-editor-crop-radio-fixed-ratio-on",
 			cropFixedRatioOff: ".fl-image-editor-crop-radio-fixed-ratio-off",
+			resizeScale: ".fl-image-editor-resize-scale", //Resize Location
+			resizeWidth: ".fl-image-editor-resize-width", //Resize Width
+			resizeHeight: ".fl-image-editor-resize-height", //Resize Height
 			widthSpinner: ".flc-image-editor-resize-spinner-width", //required, Resize width spinner
 			heightSpinner: ".flc-image-editor-resize-spinner-height", //required, Resize height spinner
 			percSpinner: ".flc-image-editor-resize-spinner-percentage", //required, Resize height spinner
