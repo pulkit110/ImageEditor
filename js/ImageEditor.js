@@ -226,9 +226,9 @@ var fluid_1_4 = fluid_1_4 || {};
 				that.cropper.setLocationY(parseFloat(newLocation[1]));
 			}
 		} else if (that.locate("cropWidth").get(0) === viewNode) {
-			that.cropper.setWidth(parseFloat(newValue));
+			that.cropper.setWidth(parseFloat(newValue), that.locate("cropFixedRatioOn").get(0).checked);
 		} else if (that.locate("cropHeight").get(0) === viewNode) {
-			that.cropper.setHeight(parseFloat(newValue));
+			that.cropper.setHeight(parseFloat(newValue), that.locate("cropFixedRatioOn").get(0).checked);
 		}
 	};
 	
@@ -403,6 +403,8 @@ var fluid_1_4 = fluid_1_4 || {};
 			cropLocation: ".fl-image-editor-crop-location", //Crop Location
 			cropWidth: ".fl-image-editor-crop-width", //Crop Width
 			cropHeight: ".fl-image-editor-crop-height", //Crop Height
+			cropFixedRatioOn: ".fl-image-editor-crop-radio-fixed-ratio-on",
+			cropFixedRatioOff: ".fl-image-editor-crop-radio-fixed-ratio-off",
 			widthSpinner: ".flc-image-editor-resize-spinner-width", //required, Resize width spinner
 			heightSpinner: ".flc-image-editor-resize-spinner-height", //required, Resize height spinner
 			percSpinner: ".flc-image-editor-resize-spinner-percentage", //required, Resize height spinner

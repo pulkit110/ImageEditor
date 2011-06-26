@@ -1,11 +1,3 @@
-/*
- * ImageEditor Canvas
- * These width and height scale the canvas rather than changing its dimensions.
-.flc-image-canvas {
-	width: 500px;
-	height: 500px;
-}
-*/
 
 .fl-image-editor-border {
 	border: 2px solid red;
