@@ -93,7 +93,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		hideElement(that, that.locate("cropOptions"));
 		hideElement(that, that.locate("resizeOptions"));
 		hideElement(that, that.locate("tagOptions"));
-		that.cropper.reset(true);	//reset crop without actually cropping the image.
+		if (that.cropStarted) {
+			that.cropper.reset(true);	//reset crop without actually cropping the image.
+		}
 		that.cropStarted = false;
 		that.resizeStarted = false;
 		that.tagStarted = false;
@@ -240,14 +242,14 @@ var fluid_1_4 = fluid_1_4 || {};
 	
 	var manageInlineEdits = function (that, newValue, oldValue, editNode, viewNode) {
 		// Cancel the edit if new value not defined
-		if (newValue == "") {
+		if (newValue === "") {
 			cancelInlineEdits(that);
 			return;
 		} 
 		
 		if (that.locate("cropLocation").get(0) === viewNode) {
 			var newLocation = newValue.split(',', 2);
-			if (newLocation.length == 2) {
+			if (newLocation.length === 2) {
 				that.cropper.setLocationX(parseFloat(newLocation[0]));
 				that.cropper.setLocationY(parseFloat(newLocation[1]));
 			}
@@ -260,7 +262,6 @@ var fluid_1_4 = fluid_1_4 || {};
 		} else if (that.locate("resizeHeight").get(0) === viewNode) {
 			setResizeHeight(that, parseFloat(newValue), parseFloat(viewNode.textContent), true);
 		} else if (that.locate("resizeScale").get(0) === viewNode) {
-			var temp = newValue.indexOf("%");
 			newValue = newValue.substring(0, (newValue.indexOf("%") === -1) ? newValue.length : newValue.indexOf("%"));
 			that.locate("resizeWidth").get(0).textContent = newValue / 100 * that.getImageWidth();
 			that.locate("resizeHeight").get(0).textContent = newValue / 100 * that.getImageHeight();
