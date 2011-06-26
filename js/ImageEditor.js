@@ -105,6 +105,9 @@ var fluid_1_4 = fluid_1_4 || {};
 			showElement(that, that.locate("cropOptions"));
 			that.cropStarted = true;
 			that.cropper.init(that.imageCanvas.get()[0], that.resizeFactor, that.image, that.imageX, that.imageY);
+		} else {
+			hideAllOptions(that);
+			that.cropStarted = false;
 		}
 	};
 	
@@ -116,7 +119,31 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.croppingDimensions = croppingReturnValues[1];
 		that.setImage(croppedImageDataURL, TYPE_CROP);
 	};
+
+	var setupResize = function (that) {
+		if (!that.resizeStarted) {
+			hideAllOptions(that);
+			showElement(that, that.locate("resizeOptions"));
+			that.locate("resizeWidth").get(0).textContent = that.getImageWidth();
+			that.locate("resizeHeight").get(0).textContent = that.getImageHeight();
+			that.locate("resizeScale").get(0).textContent = '100%';
+			that.resizeStarted = true;
+		} else {
+			hideAllOptions(that);
+			that.resizeStarted = false;
+		}
+	};
 	
+	var confirmResize = function (that) {
+		that.resizeStarted = false;
+		hideElement(that, that.locate("resizeOptions"));
+		var resizedImageDataURL, newH, newW;
+		newW = parseFloat(that.locate("resizeWidth").get(0).textContent);
+		newH = parseFloat(that.locate("resizeHeight").get(0).textContent);
+		resizedImageDataURL = resize(that, newW, newH);
+		that.setImage(resizedImageDataURL, TYPE_RESIZE);
+	};
+		
 	var setupTag = function (that) {
 		if (that.tagStarted) {
 			//Done tagging
@@ -139,28 +166,7 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.tagger.init(that.imageCanvas, that.resizeFactor, that.image, that.imageX, that.imageY);
 		}
 	};
-	
-	var setupResize = function (that) {
-		if (!that.resizeStarted) {
-			hideAllOptions(that);
-			showElement(that, that.locate("resizeOptions"));
-			that.locate("resizeWidth").get(0).textContent = that.getImageWidth();
-			that.locate("resizeHeight").get(0).textContent = that.getImageHeight();
-			that.locate("resizeScale").get(0).textContent = '100%';
-			that.resizeStarted = true;
-		}
-	};
-	
-	var confirmResize = function (that) {
-		that.resizeStarted = false;
-		hideElement(that, that.locate("resizeOptions"));
-		var resizedImageDataURL, newH, newW;
-		newW = parseFloat(that.locate("resizeWidth").get(0).textContent);
-		newH = parseFloat(that.locate("resizeHeight").get(0).textContent);
-		resizedImageDataURL = resize(that, newW, newH);
-		that.setImage(resizedImageDataURL, TYPE_RESIZE);
-	};
-	
+		
 	var showAnnotations = function (that) {
 		that.tagger.showAnnotations();
 		that.annotationsShown = true;
@@ -284,8 +290,6 @@ var fluid_1_4 = fluid_1_4 || {};
 	
 	var setupImageEditor = function (that) {
 
-		// Inject canvas element to the container
-		//that.container.append('<canvas class=\"flc-image-canvas\" id =\"fl-image-canvas\"></canvas>');
 		that.imageCanvas = that.locate("imageCanvas");
 		that.menuBar = that.locate("menuBar");
 		that.resizeButton = that.locate("resizeButton");
