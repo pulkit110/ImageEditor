@@ -272,18 +272,20 @@ var fluid_1_4 = fluid_1_4 || {};
 
 		bindDOMEvents(that);
 		
+		var manageAllInlineEdits = function (newValue, oldValue, editNode, viewNode) {
+			manageInlineEdits(that, newValue, oldValue, editNode, viewNode);
+		};
+		
 		for (var i = 0; i < that.options.menuInlineEdits.length; ++i) {
 			var menuInlineEdit = that.options.menuInlineEdits[i];
-			menuInlineEdit.events.onFinishEdit.addListener (function (newValue, oldValue, editNode, viewNode) {
-				manageInlineEdits(that, newValue, oldValue, editNode, viewNode)
-			});
+			menuInlineEdit.events.onFinishEdit.addListener(manageAllInlineEdits);
 		}
 		
-		that.cropper.events.onChangeHeight.addListener (function (newHeight) {
+		that.cropper.events.onChangeHeight.addListener(function (newHeight) {
 			updateCropHeight(that, newHeight);
 		});
 		
-		that.cropper.events.onChangeWidth.addListener (function (newWidth) {
+		that.cropper.events.onChangeWidth.addListener(function (newWidth) {
 			updateCropWidth(that, newWidth);
 		});
 			
