@@ -200,24 +200,6 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.locate("resizeConfirm").click(function () {
 			confirmResize(that);
 		});
-		
-		that.resizeRadioCustom.change(function () {
-			that.resizeRadioCustomFlag = true;
-			that.resizeRadioPercFlag = false;
-			enableElement(that, that.widthSpinner);
-			enableElement(that, that.heightSpinner);
-			disableElement(that, that.percSpinner);
-			that.widthSpinner.get()[0].value = that.image.width;
-			that.heightSpinner.get()[0].value = that.image.height;
-		});
-		that.resizeRadioPerc.change(function () {
-			that.resizeRadioCustomFlag = false;
-			that.resizeRadioPercFlag = true;
-			enableElement(that, that.percSpinner);
-			disableElement(that, that.widthSpinner);
-			disableElement(that, that.heightSpinner);
-			that.percSpinner.get()[0].value = 100;
-		});
 	};
 	
 	var updateResizeWidth = function (that, newWidth, oldWidth, isFixedRatio) {
@@ -301,10 +283,7 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.widthSpinner = that.locate("widthSpinner");
 		that.heightSpinner = that.locate("heightSpinner");
 		that.percSpinner = that.locate("percSpinner");
-		that.resizeRadioCustom = that.locate("resizeRadioCustom");
-		that.resizeRadioPerc = that.locate("resizeRadioPerc");
-		that.resizeOptions = that.locate("resizeOptionsOld");
-
+		
 		that.cropStarted = false;
 		that.tagStarted = false;
 		that.resizeStarted = false;
@@ -318,7 +297,6 @@ var fluid_1_4 = fluid_1_4 || {};
 		disableElement(that, that.cropButton);
 		disableElement(that, that.resizeButton);
 
-		hideElement(that, that.resizeOptions);
 		hideElement(that, that.locate("cropOptions"));
 		hideElement(that, that.locate("resizeOptions"));
 		hideElement(that, that.locate("tagOptions"));
@@ -452,12 +430,6 @@ var fluid_1_4 = fluid_1_4 || {};
 			resizeScale: ".fl-image-editor-resize-scale", //Resize Location
 			resizeWidth: ".fl-image-editor-resize-width", //Resize Width
 			resizeHeight: ".fl-image-editor-resize-height", //Resize Height
-			widthSpinner: ".flc-image-editor-resize-spinner-width", //required, Resize width spinner
-			heightSpinner: ".flc-image-editor-resize-spinner-height", //required, Resize height spinner
-			percSpinner: ".flc-image-editor-resize-spinner-percentage", //required, Resize height spinner
-			resizeRadioCustom: ".flc-image-editor-resize-radio-custom", //required, Resize Custom radio button
-			resizeRadioPerc: ".flc-image-editor-resize-radio-percentage", //required, Resize Percentage radio button
-			resizeOptionsOld: ".fl-image-editor-resize-options-old", //resize options div
 			showAnnotation: ".fl-image-editor-show-annotation",
 			showAnnotationsLink: ".flc-image-editor-show-annotations-link"
 		},

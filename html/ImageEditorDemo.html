@@ -1,104 +1,101 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Image Editor Demo</title>
-  
-        <link rel="stylesheet" type="text/css" href="../../../framework/fss/css/fss-reset-global.css" />
-        <link rel="stylesheet" type="text/css" href="../../../framework/fss/css/fss-base-global.css" />
-        <link rel="stylesheet" type="text/css" href="../../../framework/fss/css/fss-text.css" />
-        <link rel="stylesheet" type="text/css" href="../../../framework/fss/css/fss-layout.css" />
-        
-        <link rel="stylesheet" type="text/css" href="../../inlineEdit/css/InlineEdit.css" />
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Image Editor Demo</title>
+		<link rel="stylesheet" type="text/css" href="../../../framework/fss/css/fss-reset-global.css" />
+		<link rel="stylesheet" type="text/css" href="../../../framework/fss/css/fss-base-global.css" />
+		<link rel="stylesheet" type="text/css" href="../../../framework/fss/css/fss-text.css" />
+		<link rel="stylesheet" type="text/css" href="../../../framework/fss/css/fss-layout.css" />
 
-        <link rel="stylesheet" type="text/css" href="../../uploader/css/Uploader.css" />
-        
-        <link rel="stylesheet" type="text/css" href="../css/ImageEditor.css" />
-        <link rel="stylesheet" type="text/css" href="../css/ImageEditorDemo.css" />
-        
-        <link rel="stylesheet" type="text/css" href="../../taggerUI/css/TaggerUI.css" />
+		<link rel="stylesheet" type="text/css" href="../../inlineEdit/css/InlineEdit.css" />
 
-        <!-- Fluid and jQuery Dependencies -->
-        <script type="text/javascript" src="../../../lib/jquery/core/js/jquery.js"></script>
-        <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.core.js"></script>
-        <script type="text/javascript" src="../../../framework/core/js/jquery.keyboard-a11y.js"></script>
-        <script type="text/javascript" src="../../../lib/jquery/plugins/scrollTo/js/jquery.scrollTo.js"></script>
-        <script type="text/javascript" src="../../../lib/swfobject/js/swfobject.js"></script>
-        <script type="text/javascript" src="../../../lib/swfupload/js/swfupload.js"></script>
-        <script type="text/javascript" src="../../../framework/core/js/Fluid.js"></script>
-        <script type="text/javascript" src="../../../framework/core/js/FluidDocument.js"></script>
-        <script type="text/javascript" src="../../../framework/core/js/FluidView.js"></script>
-        <script type="text/javascript" src="../../../framework/core/js/DataBinding.js"></script>
-        <script type="text/javascript" src="../../../framework/core/js/FluidIoC.js"></script>
-        <script type="text/javascript" src="../../../framework/enhancement/js/ProgressiveEnhancement.js"></script>
-        
-        <!-- Inline Edits Dependencies -->
-        <script type="text/javascript" src="../../inlineEdit/js/InlineEdit.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../uploader/css/Uploader.css" />
 
-        <!-- Uploader dependencies -->
-        <script type="text/javascript" src="../../uploader/js/Uploader.js"></script>
-        <script type="text/javascript" src="../../uploader/js/FileQueue.js"></script>
-        <script type="text/javascript" src="../../progress/js/Progress.js"></script>
-        <script type="text/javascript" src="../../uploader/js/FileQueueView.js"></script>
-        <script type="text/javascript" src="../../uploader/js/FlashUploaderSupport.js"></script>
-        <script type="text/javascript" src="../../uploader/js/Flash9UploaderSupport.js"></script>
-        <script type="text/javascript" src="../../uploader/js/HTML5UploaderSupport.js"></script>
-        <script type="text/javascript" src="../../uploader/js/DemoUploadManager.js"></script>
-        <script type="text/javascript" src="../../uploader/js/MimeTypeExtensions.js"></script>
-        
-        <script type="text/javascript" src="../js/ImageEditorDemo.js"></script>
-        
-        <!-- Cropper UI dependencies -->
-        <script type="text/javascript" src="../../cropperUI/js/CropperUI.js"></script>
-        
-        <!-- Tagger UI dependencies -->
-        <script type="text/javascript" src="../../taggerUI/js/TaggerUI.js"></script>
-        
-        <!-- Image Editor dependencies -->
-        <script type="text/javascript" src="../js/ImageEditor.js"></script>        
-        
-    </head>
-    
-    <body>
-    	<!-- <div id="image-space"><canvas class="flc-image-canvas fl-image-canvas"></canvas></div> -->
-    	<div id="image-space">
-    		
-    		<div class="fl-image-editor-menu">
-	    		<div class="fl-image-editor-buttons">
-					<button type="button" class="flc-image-editor-button-crop fl-image-editor-button-crop">Crop</button>
-					<button type="button" class="flc-image-editor-button-resize fl-image-editor-button-resize">Resize</button>
-					<button type="button" class="flc-image-editor-button-tag fl-image-editor-button-crop">Tag</button>
+		<link rel="stylesheet" type="text/css" href="../css/ImageEditor.css" />
+		<link rel="stylesheet" type="text/css" href="../css/ImageEditorDemo.css" />
+
+		<link rel="stylesheet" type="text/css" href="../../taggerUI/css/TaggerUI.css" />
+
+		<!-- Fluid and jQuery Dependencies -->
+		<script type="text/javascript" src="../../../lib/jquery/core/js/jquery.js"></script>
+		<script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.core.js"></script>
+		<script type="text/javascript" src="../../../framework/core/js/jquery.keyboard-a11y.js"></script>
+		<script type="text/javascript" src="../../../lib/jquery/plugins/scrollTo/js/jquery.scrollTo.js"></script>
+		<script type="text/javascript" src="../../../lib/swfobject/js/swfobject.js"></script>
+		<script type="text/javascript" src="../../../lib/swfupload/js/swfupload.js"></script>
+		<script type="text/javascript" src="../../../framework/core/js/Fluid.js"></script>
+		<script type="text/javascript" src="../../../framework/core/js/FluidDocument.js"></script>
+		<script type="text/javascript" src="../../../framework/core/js/FluidView.js"></script>
+		<script type="text/javascript" src="../../../framework/core/js/DataBinding.js"></script>
+		<script type="text/javascript" src="../../../framework/core/js/FluidIoC.js"></script>
+		<script type="text/javascript" src="../../../framework/enhancement/js/ProgressiveEnhancement.js"></script>
+		<!-- Inline Edits Dependencies -->
+		<script type="text/javascript" src="../../inlineEdit/js/InlineEdit.js"></script>
+		<!-- Uploader dependencies -->
+		<script type="text/javascript" src="../../uploader/js/Uploader.js"></script>
+		<script type="text/javascript" src="../../uploader/js/FileQueue.js"></script>
+		<script type="text/javascript" src="../../progress/js/Progress.js"></script>
+		<script type="text/javascript" src="../../uploader/js/FileQueueView.js"></script>
+		<script type="text/javascript" src="../../uploader/js/FlashUploaderSupport.js"></script>
+		<script type="text/javascript" src="../../uploader/js/Flash9UploaderSupport.js"></script>
+		<script type="text/javascript" src="../../uploader/js/HTML5UploaderSupport.js"></script>
+		<script type="text/javascript" src="../../uploader/js/DemoUploadManager.js"></script>
+		<script type="text/javascript" src="../../uploader/js/MimeTypeExtensions.js"></script>
+		<script type="text/javascript" src="../js/ImageEditorDemo.js"></script>
+		<!-- Cropper UI dependencies -->
+		<script type="text/javascript" src="../../cropperUI/js/CropperUI.js"></script>
+		<!-- Tagger UI dependencies -->
+		<script type="text/javascript" src="../../taggerUI/js/TaggerUI.js"></script>
+		<!-- Image Editor dependencies -->
+		<script type="text/javascript" src="../js/ImageEditor.js"></script>
+	</head>
+	<body>
+		<!-- <div id="image-space"><canvas class="flc-image-canvas fl-image-canvas"></canvas></div> -->
+		<div id="image-space">
+
+			<div class="fl-image-editor-menu">
+				<div class="fl-image-editor-buttons">
+					<button type="button" class="flc-image-editor-button-crop fl-image-editor-button-crop">
+						Crop
+					</button>
+					<button type="button" class="flc-image-editor-button-resize fl-image-editor-button-resize">
+						Resize
+					</button>
+					<button type="button" class="flc-image-editor-button-tag fl-image-editor-button-crop">
+						Tag
+					</button>
 				</div>
 				<div class="fl-image-editor-options fl-image-editor-crop-options">
 					<b>CROP IMAGE</b>
-					<br>
+					<br />
 					&nbsp;&nbsp;use arrow keys or input location:
 					<span class="flc-inlineEditable">
 						<span class="flc-inlineEdit-text fl-image-editor-crop-location"></span>
 					</span>
-					<br>
+					<br />
 					&nbsp;&nbsp;width:
 					<span class="flc-inlineEditable">
 						<span class="flc-inlineEdit-text fl-image-editor-crop-width"></span>
 					</span>
-					<input type="radio" name="flc-imge-editor-crop-radios" class="fl-image-editor-crop-radio-fixed-ratio-on" title="Fixed Ratio On" checked="false" value="radio"/>
-					<input type="radio" name="flc-imge-editor-crop-radios" class="fl-image-editor-crop-radio-fixed-ratio-off" title="Fixed Ratio Off" checked="true" value="radio"/>
+					<input type="radio" name="flc-imge-editor-crop-radios" class="fl-image-editor-crop-radio-fixed-ratio-on" title="Fixed Ratio On" value="radio"/>
+					<input type="radio" name="flc-imge-editor-crop-radios" class="fl-image-editor-crop-radio-fixed-ratio-off" title="Fixed Ratio Off" checked="checked" value="radio"/>
 					height:
 					<span class="flc-inlineEditable">
 						<span class="flc-inlineEdit-text fl-image-editor-crop-height"></span>
 					</span>
 					<button class="fl-image-editor-button-crop-confirm">
 					</button>
-					<br>
+					<br />
 				</div>
 				<div class="fl-image-editor-options fl-image-editor-resize-options">
 					<b>RESIZE IMAGE</b>
-					<br>
+					<br />
 					&nbsp;&nbsp;scale:
 					<span class="flc-inlineEditable">
 						<span class="flc-inlineEdit-text fl-image-editor-resize-scale"></span>
 					</span>
-					<br>
+					<br />
 					&nbsp;&nbsp;width:
 					<span class="flc-inlineEditable">
 						<span class="flc-inlineEdit-text fl-image-editor-resize-width"></span>
@@ -109,42 +106,22 @@
 					</span>
 					<button class="fl-image-editor-button-resize-confirm">
 					</button>
-					<br>
+					<br />
 				</div>
 				<div class="fl-image-editor-options fl-image-editor-tag-options">
 					TAG
 				</div>
 			</div>
-			
 			<div class="flc-image-canvas-div">
-    			<canvas class="flc-image-canvas" width=750px height=750px></canvas>
-    		</div>
-    		
-    		<div class="fl-image-editor-show-annotation">
+				<canvas class="flc-image-canvas" width=750px height=750px>
+				</canvas>
 			</div>
-    		
-    		<div class="fl-image-editor-resize-options-old">
-    			<label>
-				    <input type="radio" name="flc-image-editor-resize-radios" class="flc-image-editor-resize-radio-custom" value="radio"/>
-		    		Custom width x height
-			    </label>
-			    <br />
-			    <input class="flc-image-editor-resize-spinner-width" type="number" min="0" step="1">
-			    &nbsp; x &nbsp; 
-    			<input class="flc-image-editor-resize-spinner-height" type="number" min="0" step="1">
-			    <br /><br />
-				<label>
-				    <input type="radio" name="flc-image-editor-resize-radios" class="flc-image-editor-resize-radio-percentage" value="radio"/>
-				    Percentage of original width x height
-			    </label>
-				<br />
-				<input class="flc-image-editor-resize-spinner-percentage" type="number" min="0" max="100" step="1" value="100"> &nbsp;%
-
+			<div class="fl-image-editor-show-annotation">
 			</div>
-    		
-    		
-    	</div>
-    	<div id="uploader-contents"></div>
-    	<div id="server-error"></div>
-    </body>
+		</div>
+		<div id="uploader-contents">
+		</div>
+		<div id="server-error">
+		</div>
+	</body>
 </html>
