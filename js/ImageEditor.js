@@ -220,17 +220,19 @@ var fluid_1_4 = fluid_1_4 || {};
 		});
 	};
 	
-	var setResizeWidth = function (that, newWidth, oldWidth, isFixedRatio) {
+	var updateResizeWidth = function (that, newWidth, oldWidth, isFixedRatio) {
 		var oldResizeHeight = parseFloat(that.locate("resizeHeight").get(0).textContent); 
 		if (isFixedRatio) {
 			that.locate("resizeHeight").get(0).textContent = Math.round(newWidth / oldWidth * oldResizeHeight);
+			that.locate("resizeScale").get(0).textContent = Math.round(newWidth / that.getImageWidth() * 100) + "%";
 		}
 	};
 	
-	var setResizeHeight = function (that, newHeight, oldHeight, isFixedRatio) {
+	var updateResizeHeight = function (that, newHeight, oldHeight, isFixedRatio) {
 		var oldResizeWidth = parseFloat(that.locate("resizeWidth").get(0).textContent); 
 		if (isFixedRatio) {
 			that.locate("resizeWidth").get(0).textContent = Math.round(newHeight / oldHeight * oldResizeWidth);
+			that.locate("resizeScale").get(0).textContent = Math.round(newHeight / that.getImageHeight() * 100) + "%";
 		}
 	};
 	
@@ -258,9 +260,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		} else if (that.locate("cropHeight").get(0) === viewNode) {
 			that.cropper.setHeight(parseFloat(newValue), that.locate("cropFixedRatioOn").get(0).checked);
 		} else if (that.locate("resizeWidth").get(0) === viewNode) {
-			setResizeWidth(that, parseFloat(newValue), parseFloat(viewNode.textContent), true);
+			updateResizeWidth(that, parseFloat(newValue), parseFloat(viewNode.textContent), true);
 		} else if (that.locate("resizeHeight").get(0) === viewNode) {
-			setResizeHeight(that, parseFloat(newValue), parseFloat(viewNode.textContent), true);
+			updateResizeHeight(that, parseFloat(newValue), parseFloat(viewNode.textContent), true);
 		} else if (that.locate("resizeScale").get(0) === viewNode) {
 			newValue = newValue.substring(0, (newValue.indexOf("%") === -1) ? newValue.length : newValue.indexOf("%"));
 			that.locate("resizeWidth").get(0).textContent = newValue / 100 * that.getImageWidth();
