@@ -1,7 +1,5 @@
 /*
-Copyright 2008-2009 University of Toronto
-Copyright 2008-2009 University of California, Berkeley
-Copyright 2010-2011 OCAD University
+Copyright 2011 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -157,7 +155,7 @@ var fluid_1_4 = fluid_1_4 || {};
 			clearCanvas(that);
 			drawImage(that);
 
-			that.annotationNbUpdater(that.tagger.getNbAnnotations());
+			annotationNbUpdater(that, that.tagger.getNbAnnotations(), 0);
 		} else {
 			//Initialize and start tagging
 			hideElement(that, that.locate("showAnnotation"));
@@ -181,6 +179,30 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.locate("showAnnotationsLink").text("(show)");
 	};
 	
+	annotationNbUpdater = function (that, nbAnnotations, oldNbAnnotations) {
+
+		if (!that.tagStarted && nbAnnotations !== 0) {
+			showElement(that, that.locate("showAnnotation"));
+			var showAnnotationLink = ' <a href="" class="' + that.options.strings.showAnnotationsLink + '">(' + ((that.annotationsShown) ? 'hide' : 'show') + ')</a>';
+			if (nbAnnotations === 1) {
+				that.locate("showAnnotation").html(that.options.strings.showAnnotation + showAnnotationLink);
+			} else {
+				that.locate("showAnnotation").html(that.options.strings.showAnnotations.replace("%s", nbAnnotations) + showAnnotationLink);
+			}
+			that.locate("showAnnotationsLink").bind("click", function () {
+				if (that.annotationsShown) {
+					hideAnnotations(that);
+				} else {
+					showAnnotations(that);
+				}
+				return false;
+			});
+		} else {
+			that.annotationsShown = false;
+			hideElement(that, that.locate("showAnnotation"));
+		}
+	};
+		
 	var bindDOMEvents = function (that) {
 
 		that.locate("cropButton").click(function () {
@@ -289,13 +311,8 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.resizeStarted = false;
 		that.cropper = fluid.cropperUI(that.container);
 		that.tagger = fluid.taggerUI(that.container, {
-			annotationNbUpdater: that.annotationNbUpdater
+			//annotationNbUpdater: that.annotationNbUpdater
 		});
-
-		that.imageCanvas.addClass(that.options.styles.border);
-
-		disableElement(that, that.cropButton);
-		disableElement(that, that.resizeButton);
 
 		hideElement(that, that.locate("cropOptions"));
 		hideElement(that, that.locate("resizeOptions"));
@@ -326,6 +343,10 @@ var fluid_1_4 = fluid_1_4 || {};
 		
 		that.cropper.events.onChangeLocationY.addListener(function (newLocationY) {
 			updateCropLocationY(that, newLocationY);
+		});
+		
+		that.tagger.events.onAnnotationNbChange.addListener(function (newNbAnnotations, oldNbAnnotations) {
+			annotationNbUpdater(that, newNbAnnotations, oldNbAnnotations);
 		});
 			
 		if (that.options.demo && that.options.demoImageURL) {
@@ -376,30 +397,6 @@ var fluid_1_4 = fluid_1_4 || {};
 		
 		that.getImageHeight = function () {
 			return that.image.height;
-		};
-		
-		that.annotationNbUpdater = function (nbAnnotations) {
-
-			if (!that.tagStarted && nbAnnotations !== 0) {
-				showElement(that, that.locate("showAnnotation"));
-				var showAnnotationLink = ' <a href="" class="' + that.options.strings.showAnnotationsLink + '">(' + ((that.annotationsShown) ? 'hide' : 'show') + ')</a>';
-				if (nbAnnotations === 1) {
-					that.locate("showAnnotation").html(that.options.strings.showAnnotation + showAnnotationLink);
-				} else {
-					that.locate("showAnnotation").html(that.options.strings.showAnnotations.replace("%s", nbAnnotations) + showAnnotationLink);
-				}
-				that.locate("showAnnotationsLink").bind("click", function () {
-					if (that.annotationsShown) {
-						hideAnnotations(that);
-					} else {
-						showAnnotations(that);
-					}
-					return false;
-				});
-			} else {
-				that.annotationsShown = false;
-				hideElement(that, that.locate("showAnnotation"));
-			}
 		};
 		
 		setupImageEditor(that);
