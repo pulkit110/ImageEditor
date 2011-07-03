@@ -145,26 +145,35 @@ var fluid_1_4 = fluid_1_4 || {};
 	};
 		
 	var setupTag = function (that) {
-		if (that.tagStarted) {
-			//Done tagging
-			that.tagButton.text(that.options.buttons.tag);
-			that.tagStarted = false;
-			enableElement(that, that.cropButton);
-			enableElement(that, that.resizeButton);
-			that.tagger.doneTagging();
-			clearCanvas(that);
-			drawImage(that);
-
-			annotationNbUpdater(that, that.tagger.getNbAnnotations(), 0);
-		} else {
-			//Initialize and start tagging
+		if (!that.tagStarted) {
+			hideAllOptions(that);
+			showElement(that, that.locate("tagOptions"));
+			hideElement(that, that.locate("newTagOptions"));
 			hideElement(that, that.locate("showAnnotation"));
-			that.tagButton.text(that.options.buttons.doneTagging);
-			disableElement(that, that.resizeButton);
-			disableElement(that, that.cropButton);
+			showAnnotations(that);
 			that.tagStarted = true;
-			that.tagger.init(that.imageCanvas, that.resizeFactor, that.image, that.imageX, that.imageY);
+		} else {
+			hideAllOptions(that);
+			that.tagStarted = false;
 		}
+	};
+	
+	var startTagging = function (that) {
+		that.tagger.init(that.imageCanvas, that.resizeFactor, that.image, that.imageX, that.imageY);
+		showElement(that, that.locate("newTagOptions"));
+	};
+	
+	var confirmTag = function (that) {
+		//Done tagging
+		hideElement(that, that.locate("tagOptions"));
+		that.tagStarted = false;
+		//that.tagger.doneTagging();
+		clearCanvas(that);
+		drawImage(that);
+		
+		that.tagger.confirmTagAdd (that.locate("newTag").get(0).innerHTML);
+
+		annotationNbUpdater(that, that.tagger.getNbAnnotations(), 0);
 	};
 		
 	var showAnnotations = function (that) {
@@ -179,6 +188,21 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.locate("showAnnotationsLink").text("(show)");
 	};
 	
+	var addTagToList = function (that, newTag) {
+		var tag = document.createElement('li');
+		var tagSpan = document.createElement('span');
+		tag.className += ' ' + that.options.styles.tagLi;
+		tagSpan.className += ' ' + that.options.styles.inlineEditableText;
+		tagSpan.innerHTML = newTag;
+		tag.appendChild(tagSpan);
+		//var temp = that.locate("newTag");
+		that.locate("newTagLi").before(tag);
+	};
+	
+	var removeTagFromList = function (that, tagIndex) {
+		that.locate("tagLi").eq(tagIndex).remove();
+	};
+
 	annotationNbUpdater = function (that, nbAnnotations, oldNbAnnotations) {
 
 		if (!that.tagStarted && nbAnnotations !== 0) {
@@ -222,6 +246,10 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.locate("resizeConfirm").click(function () {
 			confirmResize(that);
 		});
+		
+		that.locate("tagConfirm").click(function () {
+			confirmTag(that);
+		});
 	};
 	
 	var updateResizeWidth = function (that, newWidth, oldWidth, isFixedRatio) {
@@ -252,7 +280,7 @@ var fluid_1_4 = fluid_1_4 || {};
 			cancelInlineEdits(that);
 			return;
 		} 
-		
+		var temp = that.locate("newTag");
 		if (that.locate("cropLocation").get(0) === viewNode) {
 			var newLocation = newValue.split(',', 2);
 			if (newLocation.length === 2) {
@@ -271,7 +299,19 @@ var fluid_1_4 = fluid_1_4 || {};
 			newValue = newValue.substring(0, (newValue.indexOf("%") === -1) ? newValue.length : newValue.indexOf("%"));
 			that.locate("resizeWidth").get(0).textContent = newValue / 100 * that.getImageWidth();
 			that.locate("resizeHeight").get(0).textContent = newValue / 100 * that.getImageHeight();
-		}
+		} else if (that.locate("newTag").get(0) === viewNode) {
+			startTagging(that);
+		} else if (that.locate("tagLocation").get(0) === viewNode) {
+			var newLocation = newValue.split(',', 2);
+			if (newLocation.length === 2) {
+				that.tagger.setLocationX(parseFloat(newLocation[0]));
+				that.tagger.setLocationY(parseFloat(newLocation[1]));
+			}
+		} else if (that.locate("tagWidth").get(0) === viewNode) {
+			that.tagger.setWidth(parseFloat(newValue), false);
+		} else if (that.locate("tagHeight").get(0) === viewNode) {
+			that.tagger.setHeight(parseFloat(newValue), false);
+		} 
 	};
 	
 	var updateCropHeight = function (that, newHeight) {
@@ -293,6 +333,27 @@ var fluid_1_4 = fluid_1_4 || {};
 	var updateCropLocationY = function (that, newLocationY) {
 		cropLocationY = newLocationY;
 		that.locate("cropLocation").get(0).textContent = Math.round(cropLocationX) + ", " + Math.round(cropLocationY);
+	};
+	
+	var updateTagHeight = function (that, newHeight) {
+		that.locate("tagHeight").get(0).textContent = Math.round(newHeight);
+	};
+	
+	var updateTagWidth = function (that, newWidth) {
+		that.locate("tagWidth").get(0).textContent = Math.round(newWidth);
+	};
+	
+	var tagLocationX = 0;
+	var tagLocationY = 0;
+	
+	var updateTagLocationX = function (that, newLocationX) {
+		tagLocationX = newLocationX;
+		that.locate("tagLocation").get(0).textContent = Math.round(tagLocationX) + ", " + Math.round(tagLocationY);
+	};
+	
+	var updateTagLocationY = function (that, newLocationY) {
+		tagLocationY = newLocationY;
+		that.locate("tagLocation").get(0).textContent = Math.round(tagLocationX) + ", " + Math.round(tagLocationY);
 	};
 	
 	var setupImageEditor = function (that) {
@@ -345,8 +406,32 @@ var fluid_1_4 = fluid_1_4 || {};
 			updateCropLocationY(that, newLocationY);
 		});
 		
+		that.tagger.events.onChangeHeight.addListener(function (newHeight) {
+			updateTagHeight(that, newHeight);
+		});
+		
+		that.tagger.events.onChangeWidth.addListener(function (newWidth) {
+			updateTagWidth(that, newWidth);
+		});
+		
+		that.tagger.events.onChangeLocationX.addListener(function (newLocationX) {
+			updateTagLocationX(that, newLocationX);
+		});
+		
+		that.tagger.events.onChangeLocationY.addListener(function (newLocationY) {
+			updateTagLocationY(that, newLocationY);
+		});
+		
 		that.tagger.events.onAnnotationNbChange.addListener(function (newNbAnnotations, oldNbAnnotations) {
 			annotationNbUpdater(that, newNbAnnotations, oldNbAnnotations);
+		});
+		
+		that.tagger.events.onAnnotationAdd.addListener(function (newTag) {
+			addTagToList(that, newTag);
+		});
+		
+		that.tagger.events.onAnnotationRemove.addListener(function (tagIndex) {
+			removeTagFromList(that, tagIndex);
 		});
 			
 		if (that.options.demo && that.options.demoImageURL) {
@@ -416,26 +501,38 @@ var fluid_1_4 = fluid_1_4 || {};
 			cropOptions: ".fl-image-editor-crop-options", //required, Crop Options
 			resizeOptions: ".fl-image-editor-resize-options", //required, Resize Options
 			tagOptions: ".fl-image-editor-tag-options", //required, Tag Options
+			newTagOptions: ".fl-image-editor-new-tag-options", //required, New Tag Options
 			cropConfirm: ".fl-image-editor-button-crop-confirm", //required, Crop Confirm Button
 			resizeConfirm: ".fl-image-editor-button-resize-confirm", //required, Resize Confirm Button
 			tagConfirm: ".fl-image-editor-button-tag-confirm", //required, Tag Confirm Button
 			cropLocation: ".fl-image-editor-crop-location", //Crop Location
 			cropWidth: ".fl-image-editor-crop-width", //Crop Width
 			cropHeight: ".fl-image-editor-crop-height", //Crop Height
+			tagLocation: ".fl-image-editor-tag-location", //Tag Location
+			tagWidth: ".fl-image-editor-tag-width", //Tag Width
+			tagHeight: ".fl-image-editor-tag-height", //Tag Height
 			cropFixedRatioOn: ".fl-image-editor-crop-radio-fixed-ratio-on",
 			cropFixedRatioOff: ".fl-image-editor-crop-radio-fixed-ratio-off",
 			resizeScale: ".fl-image-editor-resize-scale", //Resize Location
 			resizeWidth: ".fl-image-editor-resize-width", //Resize Width
 			resizeHeight: ".fl-image-editor-resize-height", //Resize Height
 			showAnnotation: ".fl-image-editor-show-annotation",
-			showAnnotationsLink: ".flc-image-editor-show-annotations-link"
+			showAnnotationsLink: ".flc-image-editor-show-annotations-link",
+			newTag: ".fl-image-editor-tag-new",
+			newTagLi: ".fl-image-editor-tag-new-li",
+			existingTag: ".fl-image-editor-tag-existing",
+			tagList: ".fl-image-editor-tag-list",
+			tagLi: ".flc-image-editor-tag"
 		},
 
 		styles: {
 			disabled: "fl-image-editor-disabled",
 			hidden: "fl-image-editor-hidden",
 			dim: "fl-image-editor-dim",
-			border: "fl-image-editor-border"
+			border: "fl-image-editor-border",
+			newTag: "fl-image-editor-tag-new",
+			inlineEditableText: "flc-inlineEdit-text",
+			tagLi: "flc-image-editor-tag"
 		},
 
 		buttons: {
