@@ -90,6 +90,7 @@
 
 .fl-image-editor-options {
     background-color: #696969;
+    width: 500px;
 }
 
 .fl-image-editor-crop-options {
@@ -168,4 +169,25 @@
     background-color: #FFF;
     -moz-border-radius: 20px;
     -webkit-border-radius:20px;
+}
+
+/*
+ * Tag List Item
+ */
+.flc-image-editor-tag:hover {
+	color: yellow;	
+}
+
+.flc-image-editor-tag {
+}
+
+/*
+ * Tag remove button in list
+ */
+.flc-image-editor-tag-remove {
+    float: right;
+}
+
+.flc-image-editor-tag-remove:hover, tr:focus {
+	cursor: pointer;
 }

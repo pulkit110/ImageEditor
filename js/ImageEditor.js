@@ -94,9 +94,15 @@ var fluid_1_4 = fluid_1_4 || {};
 		if (that.cropStarted) {
 			that.cropper.reset(true);	//reset crop without actually cropping the image.
 		}
+		if (that.tagStarted) {
+			that.tagger.doneTagging();
+		}
 		that.cropStarted = false;
 		that.resizeStarted = false;
 		that.tagStarted = false;
+		
+		clearCanvas(that);
+		drawImage(that);
 	};
 	
 	var setupCrop = function (that) {
@@ -143,7 +149,14 @@ var fluid_1_4 = fluid_1_4 || {};
 		resizedImageDataURL = resize(that, newW, newH);
 		that.setImage(resizedImageDataURL, TYPE_RESIZE);
 	};
-		
+	
+	var resetTagStrings = function (that) {
+		that.locate("newTag").get(0).innerHTML = that.options.strings.addNewTag;
+		that.locate("tagLocation").get(0).innerHTML = that.options.strings.location;
+		that.locate("tagWidth").get(0).innerHTML = "0";
+		that.locate("tagHeight").get(0).innerHTML = "0";
+	};
+	
 	var setupTag = function (that) {
 		if (!that.tagStarted) {
 			hideAllOptions(that);
@@ -153,6 +166,7 @@ var fluid_1_4 = fluid_1_4 || {};
 			showAnnotations(that);
 			that.tagStarted = true;
 		} else {
+			resetTagStrings(that);
 			hideAllOptions(that);
 			that.tagStarted = false;
 		}
@@ -164,22 +178,21 @@ var fluid_1_4 = fluid_1_4 || {};
 	};
 	
 	var confirmTag = function (that) {
-		//Done tagging
 		hideElement(that, that.locate("tagOptions"));
 		that.tagStarted = false;
-		//that.tagger.doneTagging();
 		clearCanvas(that);
 		drawImage(that);
-		
 		that.tagger.confirmTagAdd (that.locate("newTag").get(0).innerHTML);
-
 		annotationNbUpdater(that, that.tagger.getNbAnnotations(), 0);
+		resetTagStrings(that);
 	};
 		
 	var showAnnotations = function (that) {
-		that.tagger.showAnnotations();
-		that.annotationsShown = true;
-		that.locate("showAnnotationsLink").text("(hide)");
+		if (that.tagger.getNbAnnotations() > 0) {
+			that.tagger.showAnnotations();
+			that.annotationsShown = true;
+			that.locate("showAnnotationsLink").text("(hide)");
+		}
 	};
 	
 	var hideAnnotations = function (that) {
@@ -190,13 +203,32 @@ var fluid_1_4 = fluid_1_4 || {};
 	
 	var addTagToList = function (that, newTag) {
 		var tag = document.createElement('li');
-		var tagSpan = document.createElement('span');
 		tag.className += ' ' + that.options.styles.tagLi;
+		
+		var tagSpan = document.createElement('span');
 		tagSpan.className += ' ' + that.options.styles.inlineEditableText;
 		tagSpan.innerHTML = newTag;
+		
+		var tagRemoveSpan = document.createElement('span');
+		tagRemoveSpan.className += ' ' + that.options.styles.tagRemove;
+		tagRemoveSpan.innerHTML = 'x';
+		
+		
 		tag.appendChild(tagSpan);
-		//var temp = that.locate("newTag");
+		tag.appendChild(tagRemoveSpan);
+		
 		that.locate("newTagLi").before(tag);
+		
+		$(tag).mouseover(function () {
+			that.tagger.highlightTag($(this).parent().children().index(this));
+		});
+		$(tag).mouseleave(function () {
+			that.tagger.removeHighlights();
+		});
+		
+		$(tagRemoveSpan).click(function() {
+			that.tagger.deleteTag($(this).parent().parent().children().index($(this).parent()));
+		});
 	};
 	
 	var removeTagFromList = function (that, tagIndex) {
@@ -280,7 +312,7 @@ var fluid_1_4 = fluid_1_4 || {};
 			cancelInlineEdits(that);
 			return;
 		} 
-		var temp = that.locate("newTag");
+
 		if (that.locate("cropLocation").get(0) === viewNode) {
 			var newLocation = newValue.split(',', 2);
 			if (newLocation.length === 2) {
@@ -371,9 +403,7 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.tagStarted = false;
 		that.resizeStarted = false;
 		that.cropper = fluid.cropperUI(that.container);
-		that.tagger = fluid.taggerUI(that.container, {
-			//annotationNbUpdater: that.annotationNbUpdater
-		});
+		that.tagger = fluid.taggerUI(that.container);
 
 		hideElement(that, that.locate("cropOptions"));
 		hideElement(that, that.locate("resizeOptions"));
@@ -451,24 +481,19 @@ var fluid_1_4 = fluid_1_4 || {};
 		var that = fluid.initView("fluid.imageEditor", container, options);
 
 		that.setImage = function (imageURL, isResizedORCropped) {
-
 			if (!isResizedORCropped) {
 				that.tagger.reset();
 			}
-
 			clearCanvas(that);
 			that.image = new Image();		// Create a new img element
-
+			
 			that.image.onload = function () {
-
 				drawImage(that);
-
 				if (isResizedORCropped === TYPE_RESIZE) {
 					that.tagger.adjustTagsForResize(that.imageCanvas.width(), that.imageCanvas.height(), that.resizeFactor, that.image, that.imageX, that.imageY);
 				} else if (isResizedORCropped === TYPE_CROP) {
 					that.tagger.adjustTagsForCrop(that.imageCanvas.width(), that.imageCanvas.height(), that.resizeFactor, that.image, that.imageX, that.imageY, that.croppingDimensions);
 				}
-
 				enableElement(that, that.cropButton);
 				enableElement(that, that.resizeButton);
 			};
@@ -485,8 +510,6 @@ var fluid_1_4 = fluid_1_4 || {};
 		};
 		
 		setupImageEditor(that);
-
-		//that.displayElement.hide();
 
 		return that;
 	};
@@ -522,7 +545,8 @@ var fluid_1_4 = fluid_1_4 || {};
 			newTagLi: ".fl-image-editor-tag-new-li",
 			existingTag: ".fl-image-editor-tag-existing",
 			tagList: ".fl-image-editor-tag-list",
-			tagLi: ".flc-image-editor-tag"
+			tagLi: ".flc-image-editor-tag",
+			tagRemove: ".flc-image-editor-tag-remove"
 		},
 
 		styles: {
@@ -532,7 +556,8 @@ var fluid_1_4 = fluid_1_4 || {};
 			border: "fl-image-editor-border",
 			newTag: "fl-image-editor-tag-new",
 			inlineEditableText: "flc-inlineEdit-text",
-			tagLi: "flc-image-editor-tag"
+			tagLi: "flc-image-editor-tag",
+			tagRemove: "flc-image-editor-tag-remove"
 		},
 
 		buttons: {
@@ -540,20 +565,17 @@ var fluid_1_4 = fluid_1_4 || {};
 			tag: "Tag"
 		},
 
-		//TODO: Change as needed
 		strings: {
 			showAnnotation: "The image has 1 annotation",
 			showAnnotations: "The image has %s annotations",
 			showAnnotationsLink: "flc-image-editor-show-annotations-link",
-			//Empty value for ariaBusyText will default to aria-valuenow.
-			ariaBusyText: "Progress is %percentComplete percent complete",
-			ariaDoneText: "Progress is complete."
+			addNewTag: "create new tag",
+			location: "use arrow keys or input location"
 		},
 
 		demo: false,
 		originalCanvasHeight: 750,
 		originalCanvasWidth: 750
 	});
-	//we'll put our default options here
 
 })(jQuery, fluid_1_4);

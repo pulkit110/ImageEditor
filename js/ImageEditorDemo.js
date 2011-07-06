@@ -1,7 +1,9 @@
 jQuery(document).ready(function () {
 	
 	
-	var imageEditorMenuInlineEdits = fluid.inlineEdits(".fl-image-editor-menu");
+	var imageEditorMenuInlineEdits = fluid.inlineEdits(".fl-image-editor-menu", {
+		selectonEdit: true
+	});
     	    
     	var myImageEditor = fluid.imageEditor("#image-space", {
     		demo: true,
