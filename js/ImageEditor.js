@@ -95,6 +95,7 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.cropper.reset(true);	//reset crop without actually cropping the image.
 		}
 		if (that.tagStarted) {
+			resetTagStrings(that);
 			that.tagger.doneTagging();
 		}
 		that.cropStarted = false;
@@ -387,30 +388,8 @@ var fluid_1_4 = fluid_1_4 || {};
 		tagLocationY = newLocationY;
 		that.locate("tagLocation").get(0).textContent = Math.round(tagLocationX) + ", " + Math.round(tagLocationY);
 	};
-	
-	var setupImageEditor = function (that) {
 
-		that.imageCanvas = that.locate("imageCanvas");
-		that.menuBar = that.locate("menuBar");
-		that.resizeButton = that.locate("resizeButton");
-		that.cropButton = that.locate("cropButton");
-		that.tagButton = that.locate("tagButton");
-		that.widthSpinner = that.locate("widthSpinner");
-		that.heightSpinner = that.locate("heightSpinner");
-		that.percSpinner = that.locate("percSpinner");
-		
-		that.cropStarted = false;
-		that.tagStarted = false;
-		that.resizeStarted = false;
-		that.cropper = fluid.cropperUI(that.container);
-		that.tagger = fluid.taggerUI(that.container);
-
-		hideElement(that, that.locate("cropOptions"));
-		hideElement(that, that.locate("resizeOptions"));
-		hideElement(that, that.locate("tagOptions"));
-
-		bindDOMEvents(that);
-		
+	var bindComponentEvents = function (that) {
 		var manageAllInlineEdits = function (newValue, oldValue, editNode, viewNode) {
 			manageInlineEdits(that, newValue, oldValue, editNode, viewNode);
 		};
@@ -463,14 +442,12 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.tagger.events.onAnnotationRemove.addListener(function (tagIndex) {
 			removeTagFromList(that, tagIndex);
 		});
-			
+
 		if (that.options.demo && that.options.demoImageURL) {
 			that.setImage(that.options.demoImageURL);
 		}
-		// Uploader uses application-style keyboard conventions, so give it a suitable role.
-		//that.container.attr("role", "application");
 	};
-
+	
 	/**
 	 * Instantiates a new Image Editor component.
 	 *
@@ -480,6 +457,39 @@ var fluid_1_4 = fluid_1_4 || {};
 	fluid.imageEditor = function (container, options) {
 		var that = fluid.initView("fluid.imageEditor", container, options);
 
+		/*var imageEditorKeyPress = function (evt) {
+			if (evt.which === 99) {
+				setupCrop(that);
+			}
+		};*/
+		
+		var setupImageEditor = function (that) {
+
+			that.imageCanvas = that.locate("imageCanvas");
+			that.menuBar = that.locate("menuBar");
+			that.resizeButton = that.locate("resizeButton");
+			that.cropButton = that.locate("cropButton");
+			that.tagButton = that.locate("tagButton");
+			that.widthSpinner = that.locate("widthSpinner");
+			that.heightSpinner = that.locate("heightSpinner");
+			that.percSpinner = that.locate("percSpinner");
+			
+			that.cropStarted = false;
+			that.tagStarted = false;
+			that.resizeStarted = false;
+			that.cropper = fluid.cropperUI(that.container);
+			that.tagger = fluid.taggerUI(that.container);
+	
+			hideElement(that, that.locate("cropOptions"));
+			hideElement(that, that.locate("resizeOptions"));
+			hideElement(that, that.locate("tagOptions"));
+	
+			bindDOMEvents(that);
+			
+			//$(document).keypress(imageEditorKeyPress);
+			bindComponentEvents(that);
+		};
+	
 		that.setImage = function (imageURL, isResizedORCropped) {
 			if (!isResizedORCropped) {
 				that.tagger.reset();
