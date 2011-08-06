@@ -231,6 +231,7 @@ var fluid_1_4 = fluid_1_4 || {};
 	var addTagToList = function (that, newTag) {
 		var tag = document.createElement('li');
 		tag.className += ' ' + that.options.styles.tagLi;
+		tag.className += ' ' + that.options.styles.selectable;
 		
 		var tagSpan = document.createElement('span');
 		tagSpan.className += ' ' + that.options.styles.inlineEditableText;
@@ -256,6 +257,11 @@ var fluid_1_4 = fluid_1_4 || {};
 		$(tagRemoveSpan).click(function () {
 			that.tagger.deleteTag($(this).parent().parent().children().index($(this).parent()));
 		});
+		
+		// Refresh the selectable tags list
+		if (that.tagListSelectables) {
+			that.tagListSelectables.refresh();
+		}
 	};
 	
 	var removeTagFromList = function (that, tagIndex) {
@@ -452,6 +458,8 @@ var fluid_1_4 = fluid_1_4 || {};
 		}
 	};
 	
+	
+	
 	/**
 	 * Instantiates a new Image Editor component.
 	 * @param {Object} - container the DOM element in which the Image Editor lives
@@ -462,11 +470,36 @@ var fluid_1_4 = fluid_1_4 || {};
 	fluid.imageEditor = function (container, options) {
 		var that = fluid.initView("fluid.imageEditor", container, options);
 
+		var canvasKeyboardHandler = function () {
+			if (that.cropStarted) {
+				that.cropper.activateKeyboardAccessibility();
+			} else if (that.tagStarted) {
+				that.tagger.activateKeyboardAccessibility();
+			}
+		};
+	
 		/**
 		 * Sets up an image editor instance. 
 		 */
 		var setupImageEditor = function () {
 
+			// Make the container tabbable and activable
+            that.locate("imageCanvas").fluid("tabbable");
+            that.locate("imageCanvas").fluid("activatable", canvasKeyboardHandler);
+            
+            // Make the Tag List selectable through keyboard
+            that.locate("tagList").fluid("tabbable");
+            that.tagListSelectables = fluid.selectable(that.locate("tagList"), {
+				onSelect: function (tagEl) {
+					that.tagger.highlightTag($(tagEl).parent().children().index(tagEl));
+					
+					//TODO: Add capability to delete tags using keyboard.
+				},
+				onUnselect: function (tagEl) {
+					that.tagger.removeHighlights();
+				}
+			});
+            
 			that.imageCanvas = that.locate("imageCanvas");
 			that.menuBar = that.locate("menuBar");
 			that.resizeButton = that.locate("resizeButton");
@@ -578,7 +611,8 @@ var fluid_1_4 = fluid_1_4 || {};
 			newTag: "fl-image-editor-tag-new",
 			inlineEditableText: "flc-inlineEdit-text",
 			tagLi: "flc-image-editor-tag",
-			tagRemove: "flc-image-editor-tag-remove"
+			tagRemove: "flc-image-editor-tag-remove",
+			selectable: "selectable"
 		},
 
 		buttons: {
