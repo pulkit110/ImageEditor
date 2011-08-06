@@ -184,17 +184,7 @@ var fluid_1_4 = fluid_1_4 || {};
 		if (that.tagger.getNbAnnotations() > 0) {
 			that.tagger.showAnnotations();
 			that.annotationsShown = true;
-			that.locate("showAnnotationsLink").text("(hide)");
 		}
-	};
-	
-	/**
-	 * Hide all annotations
-	 */
-	var hideAnnotations = function (that) {
-		that.tagger.hideAnnotations();
-		that.annotationsShown = false;
-		that.locate("showAnnotationsLink").text("(show)");
 	};
 
 	/**
@@ -224,33 +214,6 @@ var fluid_1_4 = fluid_1_4 || {};
 	};
 
 	/**
-	 * Update the number of annotations
-	 */
-	var annotationNbUpdater = function (that, nbAnnotations, oldNbAnnotations) {
-
-		if (!that.tagStarted && nbAnnotations !== 0) {
-			showElement(that, that.locate("showAnnotation"));
-			var showAnnotationLink = ' <a href="" class="' + that.options.strings.showAnnotationsLink + '">(' + ((that.annotationsShown) ? 'hide' : 'show') + ')</a>';
-			if (nbAnnotations === 1) {
-				that.locate("showAnnotation").html(that.options.strings.showAnnotation + showAnnotationLink);
-			} else {
-				that.locate("showAnnotation").html(that.options.strings.showAnnotations.replace("%s", nbAnnotations) + showAnnotationLink);
-			}
-			that.locate("showAnnotationsLink").bind("click", function () {
-				if (that.annotationsShown) {
-					hideAnnotations(that);
-				} else {
-					showAnnotations(that);
-				}
-				return false;
-			});
-		} else {
-			that.annotationsShown = false;
-			hideElement(that, that.locate("showAnnotation"));
-		}
-	};
-
-	/**
 	 * Confirm the addition of new tag
 	 */
 	var confirmTag = function (that) {
@@ -259,7 +222,6 @@ var fluid_1_4 = fluid_1_4 || {};
 		clearCanvas(that);
 		drawImage(that);
 		that.tagger.confirmTagAdd(that.locate("newTag").get(0).innerHTML);
-		annotationNbUpdater(that, that.tagger.getNbAnnotations(), 0);
 		resetTagStrings(that);
 	};
 	
@@ -475,10 +437,6 @@ var fluid_1_4 = fluid_1_4 || {};
 		
 		that.tagger.events.onChangeLocationY.addListener(function (newLocationY) {
 			updateTagLocationY(that, newLocationY);
-		});
-		
-		that.tagger.events.onAnnotationNbChange.addListener(function (newNbAnnotations, oldNbAnnotations) {
-			annotationNbUpdater(that, newNbAnnotations, oldNbAnnotations);
 		});
 		
 		that.tagger.events.onAnnotationAdd.addListener(function (newTag) {
