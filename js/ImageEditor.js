@@ -23,8 +23,6 @@ var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
 
-	//we'll add some private methods here
-
 	var enableElement = function (that, elm) {
 		elm.prop("disabled", false);
 		elm.removeClass(that.options.styles.dim);
@@ -74,6 +72,9 @@ var fluid_1_4 = fluid_1_4 || {};
 
 	};
 	
+	/**
+	 * Resize the image to new width and height
+	 */
 	var resize = function (that, resizeW, resizeH) {
 
 		//Create canvas to get cropped image pixels
@@ -87,6 +88,19 @@ var fluid_1_4 = fluid_1_4 || {};
 		return resizedImageDataURL;
 	};
 	
+	/**
+	 * Reset all tag strings
+	 */
+	var resetTagStrings = function (that) {
+		that.locate("newTag").get(0).innerHTML = that.options.strings.addNewTag;
+		that.locate("tagLocation").get(0).innerHTML = that.options.strings.location;
+		that.locate("tagWidth").get(0).innerHTML = "0";
+		that.locate("tagHeight").get(0).innerHTML = "0";
+	};
+
+	/**
+	 * Hides all menu options and resets the already running actions.
+	 */
 	var hideAllOptions = function (that) {
 		hideElement(that, that.locate("cropOptions"));
 		hideElement(that, that.locate("resizeOptions"));
@@ -106,6 +120,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		drawImage(that);
 	};
 	
+	/**
+	 * Setup the cropper
+	 */
 	var setupCrop = function (that) {
 		if (!that.cropStarted) {
 			hideAllOptions(that);
@@ -118,6 +135,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		}
 	};
 	
+	/**
+	 * Confirm crop action
+	 */
 	var confirmCrop = function (that) {
 		hideElement(that, that.locate("cropOptions"));
 		that.cropStarted = false;
@@ -127,6 +147,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.setImage(croppedImageDataURL, TYPE_CROP);
 	};
 
+	/**
+	 * Setup the resizer
+	 */
 	var setupResize = function (that) {
 		if (!that.resizeStarted) {
 			hideAllOptions(that);
@@ -141,6 +164,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		}
 	};
 	
+	/**
+	 * Confirm resize action 
+	 */
 	var confirmResize = function (that) {
 		that.resizeStarted = false;
 		hideElement(that, that.locate("resizeOptions"));
@@ -150,14 +176,30 @@ var fluid_1_4 = fluid_1_4 || {};
 		resizedImageDataURL = resize(that, newW, newH);
 		that.setImage(resizedImageDataURL, TYPE_RESIZE);
 	};
-	
-	var resetTagStrings = function (that) {
-		that.locate("newTag").get(0).innerHTML = that.options.strings.addNewTag;
-		that.locate("tagLocation").get(0).innerHTML = that.options.strings.location;
-		that.locate("tagWidth").get(0).innerHTML = "0";
-		that.locate("tagHeight").get(0).innerHTML = "0";
+
+	/**
+	 * Show existing annotations
+	 */
+	var showAnnotations = function (that) {
+		if (that.tagger.getNbAnnotations() > 0) {
+			that.tagger.showAnnotations();
+			that.annotationsShown = true;
+			that.locate("showAnnotationsLink").text("(hide)");
+		}
 	};
 	
+	/**
+	 * Hide all annotations
+	 */
+	var hideAnnotations = function (that) {
+		that.tagger.hideAnnotations();
+		that.annotationsShown = false;
+		that.locate("showAnnotationsLink").text("(show)");
+	};
+
+	/**
+	 * Setup the tagger
+	 */
 	var setupTag = function (that) {
 		if (!that.tagStarted) {
 			hideAllOptions(that);
@@ -173,35 +215,57 @@ var fluid_1_4 = fluid_1_4 || {};
 		}
 	};
 	
+	/**
+	 * Start a new tag
+	 */
 	var startTagging = function (that) {
 		that.tagger.init(that.imageCanvas, that.resizeFactor, that.image, that.imageX, that.imageY);
 		showElement(that, that.locate("newTagOptions"));
 	};
-	
+
+	/**
+	 * Update the number of annotations
+	 */
+	var annotationNbUpdater = function (that, nbAnnotations, oldNbAnnotations) {
+
+		if (!that.tagStarted && nbAnnotations !== 0) {
+			showElement(that, that.locate("showAnnotation"));
+			var showAnnotationLink = ' <a href="" class="' + that.options.strings.showAnnotationsLink + '">(' + ((that.annotationsShown) ? 'hide' : 'show') + ')</a>';
+			if (nbAnnotations === 1) {
+				that.locate("showAnnotation").html(that.options.strings.showAnnotation + showAnnotationLink);
+			} else {
+				that.locate("showAnnotation").html(that.options.strings.showAnnotations.replace("%s", nbAnnotations) + showAnnotationLink);
+			}
+			that.locate("showAnnotationsLink").bind("click", function () {
+				if (that.annotationsShown) {
+					hideAnnotations(that);
+				} else {
+					showAnnotations(that);
+				}
+				return false;
+			});
+		} else {
+			that.annotationsShown = false;
+			hideElement(that, that.locate("showAnnotation"));
+		}
+	};
+
+	/**
+	 * Confirm the addition of new tag
+	 */
 	var confirmTag = function (that) {
 		hideElement(that, that.locate("tagOptions"));
 		that.tagStarted = false;
 		clearCanvas(that);
 		drawImage(that);
-		that.tagger.confirmTagAdd (that.locate("newTag").get(0).innerHTML);
+		that.tagger.confirmTagAdd(that.locate("newTag").get(0).innerHTML);
 		annotationNbUpdater(that, that.tagger.getNbAnnotations(), 0);
 		resetTagStrings(that);
 	};
-		
-	var showAnnotations = function (that) {
-		if (that.tagger.getNbAnnotations() > 0) {
-			that.tagger.showAnnotations();
-			that.annotationsShown = true;
-			that.locate("showAnnotationsLink").text("(hide)");
-		}
-	};
 	
-	var hideAnnotations = function (that) {
-		that.tagger.hideAnnotations();
-		that.annotationsShown = false;
-		that.locate("showAnnotationsLink").text("(show)");
-	};
-	
+	/**
+	 * Add new tag to list
+	 */
 	var addTagToList = function (that, newTag) {
 		var tag = document.createElement('li');
 		tag.className += ' ' + that.options.styles.tagLi;
@@ -227,7 +291,7 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.tagger.removeHighlights();
 		});
 		
-		$(tagRemoveSpan).click(function() {
+		$(tagRemoveSpan).click(function () {
 			that.tagger.deleteTag($(this).parent().parent().children().index($(this).parent()));
 		});
 	};
@@ -235,31 +299,10 @@ var fluid_1_4 = fluid_1_4 || {};
 	var removeTagFromList = function (that, tagIndex) {
 		that.locate("tagLi").eq(tagIndex).remove();
 	};
-
-	annotationNbUpdater = function (that, nbAnnotations, oldNbAnnotations) {
-
-		if (!that.tagStarted && nbAnnotations !== 0) {
-			showElement(that, that.locate("showAnnotation"));
-			var showAnnotationLink = ' <a href="" class="' + that.options.strings.showAnnotationsLink + '">(' + ((that.annotationsShown) ? 'hide' : 'show') + ')</a>';
-			if (nbAnnotations === 1) {
-				that.locate("showAnnotation").html(that.options.strings.showAnnotation + showAnnotationLink);
-			} else {
-				that.locate("showAnnotation").html(that.options.strings.showAnnotations.replace("%s", nbAnnotations) + showAnnotationLink);
-			}
-			that.locate("showAnnotationsLink").bind("click", function () {
-				if (that.annotationsShown) {
-					hideAnnotations(that);
-				} else {
-					showAnnotations(that);
-				}
-				return false;
-			});
-		} else {
-			that.annotationsShown = false;
-			hideElement(that, that.locate("showAnnotation"));
-		}
-	};
-		
+	
+	/**
+	 * Bind DOM Events
+	 */
 	var bindDOMEvents = function (that) {
 
 		that.locate("cropButton").click(function () {
@@ -271,15 +314,12 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.locate("resizeButton").click(function () {
 			setupResize(that);
 		});
-		
 		that.locate("cropConfirm").click(function () {
 			confirmCrop(that);
 		});
-		
 		that.locate("resizeConfirm").click(function () {
 			confirmResize(that);
 		});
-		
 		that.locate("tagConfirm").click(function () {
 			confirmTag(that);
 		});
@@ -306,7 +346,11 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.options.menuInlineEdits[i].cancel();
 		}
 	};
-	
+
+	/**
+	 * Manage all inline edits. 
+	 * We need to call other components on the change of dimensions through an inline edit.
+	 */
 	var manageInlineEdits = function (that, newValue, oldValue, editNode, viewNode) {
 		// Cancel the edit if new value not defined
 		if (newValue === "") {
@@ -314,8 +358,10 @@ var fluid_1_4 = fluid_1_4 || {};
 			return;
 		} 
 
+		var newLocation;
+		
 		if (that.locate("cropLocation").get(0) === viewNode) {
-			var newLocation = newValue.split(',', 2);
+			newLocation = newValue.split(',', 2);
 			if (newLocation.length === 2) {
 				that.cropper.setLocationX(parseFloat(newLocation[0]));
 				that.cropper.setLocationY(parseFloat(newLocation[1]));
@@ -335,7 +381,7 @@ var fluid_1_4 = fluid_1_4 || {};
 		} else if (that.locate("newTag").get(0) === viewNode) {
 			startTagging(that);
 		} else if (that.locate("tagLocation").get(0) === viewNode) {
-			var newLocation = newValue.split(',', 2);
+			newLocation = newValue.split(',', 2);
 			if (newLocation.length === 2) {
 				that.tagger.setLocationX(parseFloat(newLocation[0]));
 				that.tagger.setLocationY(parseFloat(newLocation[1]));
@@ -450,20 +496,18 @@ var fluid_1_4 = fluid_1_4 || {};
 	
 	/**
 	 * Instantiates a new Image Editor component.
-	 *
-	 * @param {Object} container the DOM element in which the Image Editor lives
-	 * @param {Object} options configuration options for the component.
+	 * @param {Object} - container the DOM element in which the Image Editor lives
+	 * @param {Object} - an object containing any of the available options:
+	 * 						originalCanvasHeight - indicates the maximum height of canvas
+	 * 						originalCanvasWidth - indicates the maximum width of canvas
 	 */
 	fluid.imageEditor = function (container, options) {
 		var that = fluid.initView("fluid.imageEditor", container, options);
 
-		/*var imageEditorKeyPress = function (evt) {
-			if (evt.which === 99) {
-				setupCrop(that);
-			}
-		};*/
-		
-		var setupImageEditor = function (that) {
+		/**
+		 * Sets up an image editor instance. 
+		 */
+		var setupImageEditor = function () {
 
 			that.imageCanvas = that.locate("imageCanvas");
 			that.menuBar = that.locate("menuBar");
@@ -486,10 +530,12 @@ var fluid_1_4 = fluid_1_4 || {};
 	
 			bindDOMEvents(that);
 			
-			//$(document).keypress(imageEditorKeyPress);
 			bindComponentEvents(that);
 		};
 	
+		/**
+		 * @param imageURL - A URL where the image is present.
+		 */
 		that.setImage = function (imageURL, isResizedORCropped) {
 			if (!isResizedORCropped) {
 				that.tagger.reset();
@@ -511,18 +557,25 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.image.src = imageURL;			// Set the source path
 		};
 		
+		/**
+		 * Returns the width of current image. 
+		 */
 		that.getImageWidth = function () {
 			return that.image.width;
 		};
 		
+		/**
+		 * Returns the height of current image. 
+		 */
 		that.getImageHeight = function () {
 			return that.image.height;
 		};
 		
-		setupImageEditor(that);
+		setupImageEditor();
 
 		return that;
 	};
+	
 	fluid.defaults("fluid.imageEditor", {
 		gradeNames: "fluid.viewComponent",
 		selectors: {
