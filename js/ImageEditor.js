@@ -52,7 +52,11 @@ var fluid_1_4 = fluid_1_4 || {};
 	var drawImage = function (that) {
 		var imageCanvas = that.imageCanvas.get()[0];
 		var imageCanvasContext = imageCanvas.getContext('2d');	// Obtain the context
-
+		
+		if (that.image == null) {
+			return;
+		}
+		
 		// Maintain aspect ratio while resizing larger image to smaller canvas.
 		if (that.image.height > that.options.originalCanvasHeight || that.image.width > that.options.originalCanvasWidth) {
 			var heightRatio = that.image.height / that.options.originalCanvasHeight;
@@ -264,6 +268,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		}
 	};
 	
+	/**
+	 * Remove a deleted tag from list. 
+	 */
 	var removeTagFromList = function (that, tagIndex) {
 		that.locate("tagLi").eq(tagIndex).remove();
 	};
@@ -403,6 +410,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.locate("tagLocation").get(0).textContent = Math.round(tagLocationX) + ", " + Math.round(tagLocationY);
 	};
 
+	/**
+	 * Listen to events on tagger and cropper. 
+	 */
 	var bindComponentEvents = function (that) {
 		var manageAllInlineEdits = function (newValue, oldValue, editNode, viewNode) {
 			manageInlineEdits(that, newValue, oldValue, editNode, viewNode);
@@ -510,31 +520,20 @@ var fluid_1_4 = fluid_1_4 || {};
 				},
 				onUnselect: function (tagEl) {
 					that.tagger.removeHighlights();
-					$(document).unbind('keydown');
+					$(document).unbind('keydown');	//Unbind the keyboard handler 
 				}
 			});
             
 			that.imageCanvas = that.locate("imageCanvas");
-			that.menuBar = that.locate("menuBar");
-			that.resizeButton = that.locate("resizeButton");
-			that.cropButton = that.locate("cropButton");
-			that.tagButton = that.locate("tagButton");
-			that.widthSpinner = that.locate("widthSpinner");
-			that.heightSpinner = that.locate("heightSpinner");
-			that.percSpinner = that.locate("percSpinner");
 			
 			that.cropStarted = false;
 			that.tagStarted = false;
 			that.resizeStarted = false;
 			that.cropper = fluid.cropperUI(that.container);
 			that.tagger = fluid.taggerUI(that.container);
-	
-			hideElement(that, that.locate("cropOptions"));
-			hideElement(that, that.locate("resizeOptions"));
-			hideElement(that, that.locate("tagOptions"));
-
+			
+			hideAllOptions(that);
 			bindDOMEvents(that);
-
 			bindComponentEvents(that);
 		};
 	
@@ -555,8 +554,6 @@ var fluid_1_4 = fluid_1_4 || {};
 				} else if (isResizedORCropped === TYPE_CROP) {
 					that.tagger.adjustTagsForCrop(that.imageCanvas.width(), that.imageCanvas.height(), that.resizeFactor, that.image, that.imageX, that.imageY, that.croppingDimensions);
 				}
-				enableElement(that, that.cropButton);
-				enableElement(that, that.resizeButton);
 			};
 			
 			that.image.src = imageURL;			// Set the source path
