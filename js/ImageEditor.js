@@ -492,11 +492,25 @@ var fluid_1_4 = fluid_1_4 || {};
             that.tagListSelectables = fluid.selectable(that.locate("tagList"), {
 				onSelect: function (tagEl) {
 					that.tagger.highlightTag($(tagEl).parent().children().index(tagEl));
-					
-					//TODO: Add capability to delete tags using keyboard.
+					$(document).keydown(function (evt) {
+						switch (evt.which) {
+							case 46: 
+								// DELETE Key
+								that.tagger.deleteTag($(tagEl).parent().children().index(tagEl));
+								
+								$(document).unbind('keydown');
+								// Refresh the selectable tags list
+								if (that.tagListSelectables) {
+									that.tagListSelectables.refresh();
+								}
+								
+								break;							
+						}
+					});
 				},
 				onUnselect: function (tagEl) {
 					that.tagger.removeHighlights();
+					$(document).unbind('keydown');
 				}
 			});
             
@@ -518,9 +532,9 @@ var fluid_1_4 = fluid_1_4 || {};
 			hideElement(that, that.locate("cropOptions"));
 			hideElement(that, that.locate("resizeOptions"));
 			hideElement(that, that.locate("tagOptions"));
-	
+
 			bindDOMEvents(that);
-			
+
 			bindComponentEvents(that);
 		};
 	
