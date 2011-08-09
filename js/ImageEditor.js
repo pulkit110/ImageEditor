@@ -53,7 +53,7 @@ var fluid_1_4 = fluid_1_4 || {};
 		var imageCanvas = that.imageCanvas.get()[0];
 		var imageCanvasContext = imageCanvas.getContext('2d');	// Obtain the context
 		
-		if (that.image == null) {
+		if (!that.image) {
 			return;
 		}
 		
@@ -504,17 +504,16 @@ var fluid_1_4 = fluid_1_4 || {};
 					that.tagger.highlightTag($(tagEl).parent().children().index(tagEl));
 					$(document).keydown(function (evt) {
 						switch (evt.which) {
-							case 46: 
-								// DELETE Key
-								that.tagger.deleteTag($(tagEl).parent().children().index(tagEl));
-								
-								$(document).unbind('keydown');
-								// Refresh the selectable tags list
-								if (that.tagListSelectables) {
-									that.tagListSelectables.refresh();
-								}
-								
-								break;							
+						case 46: 
+							// DELETE Key
+							that.tagger.deleteTag($(tagEl).parent().children().index(tagEl));
+							
+							$(document).unbind('keydown');
+							// Refresh the selectable tags list
+							if (that.tagListSelectables) {
+								that.tagListSelectables.refresh();
+							}
+							break;							
 						}
 					});
 				},
