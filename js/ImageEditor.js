@@ -22,7 +22,7 @@ var fluid_1_4 = fluid_1_4 || {};
  ****************/
 
 (function ($, fluid) {
-
+	
 	var enableElement = function (that, elm) {
 		elm.prop("disabled", false);
 		elm.removeClass(that.options.styles.dim);
@@ -571,6 +571,14 @@ var fluid_1_4 = fluid_1_4 || {};
 		that.getImageHeight = function () {
 			return that.image.height;
 		};
+		
+		that.hide = function () {
+			hideElement(that, that.container);
+		};
+		
+		that.show = function () {
+			showElement(that, that.container);
+		}
 		
 		setupImageEditor();
 
