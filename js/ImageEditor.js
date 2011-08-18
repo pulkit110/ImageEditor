@@ -578,7 +578,11 @@ var fluid_1_4 = fluid_1_4 || {};
 		
 		that.show = function () {
 			showElement(that, that.container);
-		}
+		};
+		
+		that.getImage = function () {
+			return that.image;
+		};
 		
 		setupImageEditor();
 

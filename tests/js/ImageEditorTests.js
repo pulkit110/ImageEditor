@@ -46,11 +46,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 			jqUnit.notVisible("Component is not visible after making call to hide", container);
 			imageEditor.show();
 			jqUnit.isVisible("Component is again visible after making call to show", container);
+			
+			var image = imageEditor.getImage();
+			jqUnit.assertNotNull("Image is not null", image);
+			jqUnit.assertNotUndefined("Image is not undefined", image);
+			jqUnit.assertNotNull("Image canvas is not null", imageEditor.imageCanvas);
+			jqUnit.assertNotUndefined("Image canvas is not undefined", imageEditor.imageCanvas);
+			
+			jqUnit.assertFalse("cropStarted is not set", imageEditor.cropStarted);
+			jqUnit.assertFalse("tagStarted is not set", imageEditor.cropStarted);
+			jqUnit.assertFalse("resizeStarted is not set", imageEditor.cropStarted);
+			
+			jqUnit.assertNotNull("Cropper sub-component is not null", imageEditor.cropper);
+			jqUnit.assertNotUndefined("Cropper sub-component is not undefined", imageEditor.cropper);
+			jqUnit.assertNotNull("Tagger sub-component is not null", imageEditor.tagger);
+			jqUnit.assertNotUndefined("Tagger sub-component is not undefined", imageEditor.tagger);
 
 		});
 		
 		// 2
-		imageEditorTests.test("Cropping", function () {
+		imageEditorTests.test("Basic Cropper Tests", function () {
 
 			//create a new image editor 
 			imageEditor = fluid.imageEditor(container, {
@@ -59,11 +74,47 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 				menuInlineEdits: imageEditorMenuInlineEdits
 			});
 
+			jqUnit.assertFalse("cropStarted is not set", imageEditor.cropStarted);
 			jqUnit.notVisible("Crop Menu is initially hidden", ".fl-image-editor-crop-options");
 			imageEditor.locate("cropButton").click();
 			jqUnit.isVisible("Crop Menu is displayed after clicking on Crop", ".fl-image-editor-crop-options");
+			jqUnit.assertTrue("cropStarted is set", imageEditor.cropStarted);
+			imageEditor.locate("cropButton").click();
+			jqUnit.notVisible("Crop Menu is again hidden", ".fl-image-editor-crop-options");
+			jqUnit.assertFalse("cropStarted is not set", imageEditor.cropStarted);
 		});
 		
+		// 2
+		imageEditorTests.test("Detailed Cropper Tests", function () {
+
+			//create a new image editor 
+			imageEditor = fluid.imageEditor(container, {
+				demo: true,
+				demoImageURL: imageURL,
+				menuInlineEdits: imageEditorMenuInlineEdits
+			});
+			imageEditor.locate("cropButton").click();	//start Cropping
+			
+			jqUnit.isVisible("Crop Menu is displayed after clicking on Crop", ".fl-image-editor-crop-options");
+			jqUnit.assertTrue("cropStarted is set", imageEditor.cropStarted);
+			
+			jqUnit.assertNotNull("Canvas is not null", imageEditor.cropper.canvas);
+			jqUnit.assertNotUndefined("Canvas is not undefined", imageEditor.cropper.canvas);
+			jqUnit.assertNotNull("Context is not null", imageEditor.cropper.context);
+			jqUnit.assertNotUndefined("Context is not undefined", imageEditor.cropper.context);
+			jqUnit.assertNotNull("resizeFactor is not null", imageEditor.cropper.resizeFactor);
+			jqUnit.assertNotUndefined("resizeFactor is not undefined", imageEditor.cropper.resizeFactor);
+			jqUnit.assertNotNull("image is not null", imageEditor.cropper.image);
+			jqUnit.assertNotUndefined("image is not undefined", imageEditor.cropper.image);
+			jqUnit.assertNotNull("imageX is not null", imageEditor.cropper.imageX);
+			jqUnit.assertNotUndefined("imageX is not undefined", imageEditor.cropper.imageX);
+			jqUnit.assertNotNull("imageY is not null", imageEditor.cropper.imageY);
+			jqUnit.assertNotUndefined("imageY is not undefined", imageEditor.cropper.imageY);
+			jqUnit.assertNotNull("cropperID is not null", imageEditor.cropper.cropperID);
+			jqUnit.assertNotUndefined("cropperID is not undefined", imageEditor.cropper.cropperID);
+			
+		});
+			
 		// 3
 		imageEditorTests.test("Resizing", function () {
 
