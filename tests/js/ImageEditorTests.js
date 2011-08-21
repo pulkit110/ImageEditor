@@ -246,8 +246,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 			jqUnit.isVisible("The tag remove button is visible", ".fl-tagger-annotation-action-remove");
 			jqUnit.isVisible("The tag text div is visible", ".fl-tagger-annotation");
 			jqUnit.assertEquals("The tag text is correctly set", tagText, $(".fl-tagger-annotation").get(0).textContent);
-			
-
 
 		});
 		
