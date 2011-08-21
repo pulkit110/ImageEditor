@@ -113,6 +113,34 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 			jqUnit.assertNotNull("cropperID is not null", imageEditor.cropper.cropperID);
 			jqUnit.assertNotUndefined("cropperID is not undefined", imageEditor.cropper.cropperID);
 			
+			imageEditor.cropper.setLocationX(0);
+			imageEditor.cropper.setLocationY(0);
+			imageEditor.cropper.setWidth(0);
+			imageEditor.cropper.setHeight(0);
+			jqUnit.assertEquals("Crop location is updated in the field", "0, 0", imageEditor.locate("cropLocation").get(0).textContent);
+			jqUnit.assertEquals("Crop width is updated in the field", "0", imageEditor.locate("cropWidth").get(0).textContent);
+			jqUnit.assertEquals("Crop height is updated in the field", "0", imageEditor.locate("cropHeight").get(0).textContent);
+			
+			imageEditor.cropper.setLocationX(100);
+			imageEditor.cropper.setLocationY(100);
+			jqUnit.assertEquals("Crop location is updated in the field", "100, 100", imageEditor.locate("cropLocation").get(0).textContent);
+			
+			imageEditor.cropper.setLocationX(-100);
+			imageEditor.cropper.setLocationY(-100);
+			jqUnit.assertEquals("Crop location becomes 0, 0 for -ve location", "0, 0", imageEditor.locate("cropLocation").get(0).textContent);
+			
+			imageEditor.cropper.setLocationX(imageEditor.getImageWidth());
+			imageEditor.cropper.setLocationY(imageEditor.getImageHeight());
+			jqUnit.assertEquals("Crop location is updated in the field", imageEditor.imageCanvas.width() + ", " + imageEditor.imageCanvas.height(), imageEditor.locate("cropLocation").get(0).textContent);
+			
+			imageEditor.cropper.setLocationX(0);
+			imageEditor.cropper.setLocationY(0);
+			imageEditor.cropper.setWidth(imageEditor.getImageWidth());
+			imageEditor.cropper.setHeight(imageEditor.getImageHeight());
+			jqUnit.assertEquals("Crop width is updated in the field", imageEditor.imageCanvas.width() + "", imageEditor.locate("cropWidth").get(0).textContent);
+			jqUnit.assertEquals("Crop height is updated in the field", imageEditor.imageCanvas.height() + "", imageEditor.locate("cropHeight").get(0).textContent);
+			
+			
 		});
 			
 		// 3

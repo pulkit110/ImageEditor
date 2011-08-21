@@ -199,7 +199,7 @@ var fluid_1_4 = fluid_1_4 || {};
 			hideAllOptions(that);
 			showElement(that, that.locate("tagOptions"));
 			hideElement(that, that.locate("newTagOptions"));
-			hideElement(that, that.locate("showAnnotation"));
+			//TODO hideElement(that, that.locate("showAnnotation"));
 			showAnnotations(that);
 			that.tagStarted = true;
 		} else {
@@ -593,7 +593,7 @@ var fluid_1_4 = fluid_1_4 || {};
 		gradeNames: "fluid.viewComponent",
 		selectors: {
 			imageCanvas: ".flc-image-canvas", // required, the canvas element that shows the image
-			menuBar: ".flc-menu-bar", //required, provides different functions
+			//menuBar: ".flc-menu-bar", //required, provides different functions
 			resizeButton: ".flc-image-editor-button-resize", //required, Resize Button
 			cropButton: ".flc-image-editor-button-crop", //required, Crop Button
 			tagButton: ".flc-image-editor-button-tag", //required, Tag Button
@@ -611,12 +611,12 @@ var fluid_1_4 = fluid_1_4 || {};
 			tagWidth: ".fl-image-editor-tag-width", //Tag Width
 			tagHeight: ".fl-image-editor-tag-height", //Tag Height
 			cropFixedRatioOn: ".fl-image-editor-crop-radio-fixed-ratio-on",
-			cropFixedRatioOff: ".fl-image-editor-crop-radio-fixed-ratio-off",
-			resizeScale: ".fl-image-editor-resize-scale", //Resize Location
+			//cropFixedRatioOff: ".fl-image-editor-crop-radio-fixed-ratio-off",
+			resizeScale: ".fl-image-editor-resize-scale", //Resize Scale
 			resizeWidth: ".fl-image-editor-resize-width", //Resize Width
 			resizeHeight: ".fl-image-editor-resize-height", //Resize Height
-			showAnnotation: ".fl-image-editor-show-annotation",
-			showAnnotationsLink: ".flc-image-editor-show-annotations-link",
+			//showAnnotation: ".fl-image-editor-show-annotation",
+			//showAnnotationsLink: ".flc-image-editor-show-annotations-link",
 			newTag: ".fl-image-editor-tag-new",
 			newTagLi: ".fl-image-editor-tag-new-li",
 			existingTag: ".fl-image-editor-tag-existing",
@@ -643,9 +643,9 @@ var fluid_1_4 = fluid_1_4 || {};
 		},
 
 		strings: {
-			showAnnotation: "The image has 1 annotation",
-			showAnnotations: "The image has %s annotations",
-			showAnnotationsLink: "flc-image-editor-show-annotations-link",
+			//showAnnotation: "The image has 1 annotation",
+			//showAnnotations: "The image has %s annotations",
+			//showAnnotationsLink: "flc-image-editor-show-annotations-link",
 			addNewTag: "create new tag",
 			location: "use arrow keys or input location"
 		},
