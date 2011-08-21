@@ -168,11 +168,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 				menuInlineEdits: imageEditorMenuInlineEdits
 			});
 
+			jqUnit.assertFalse("tagStarted is not set", imageEditor.tagStarted);
 			jqUnit.notVisible("Tag Menu is initially hidden", ".fl-image-editor-tag-options");
 			imageEditor.locate("tagButton").click();
 			jqUnit.isVisible("Tag Menu is displayed after clicking on Tag", ".fl-image-editor-tag-options");
 			jqUnit.assertTrue("tagStarted is set", imageEditor.tagStarted);
+			imageEditor.locate("tagButton").click();
+			jqUnit.notVisible("Tag Menu is again hidden", ".fl-image-editor-tag-options");
+			jqUnit.assertFalse("tagStarted is not set", imageEditor.tagStarted);
+		});
+		
+		//5
+		imageEditorTests.test("Detailed Tagger Tests", function () {
 
+			//create a new image editor 
+			imageEditor = fluid.imageEditor(container, {
+				demo: true,
+				demoImageURL: imageURL,
+				menuInlineEdits: imageEditorMenuInlineEdits
+			});
+			
+			imageEditor.locate("tagButton").click();
 			imageEditor.startTagging(imageEditor);
 			
 			jqUnit.assertNotNull("Canvas is not null", imageEditor.tagger.canvas);
@@ -189,6 +205,50 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 			jqUnit.assertNotUndefined("imageY is not undefined", imageEditor.tagger.imageY);
 			jqUnit.assertNotNull("cropper is not null", imageEditor.tagger.cropper);
 			jqUnit.assertNotUndefined("cropper is not undefined", imageEditor.tagger.cropper);
+			
+			imageEditor.tagger.setLocationX(0);
+			imageEditor.tagger.setLocationY(0);
+			imageEditor.tagger.setWidth(0);
+			imageEditor.tagger.setHeight(0);
+			jqUnit.assertEquals("Tag location is updated in the field", "0, 0", imageEditor.locate("tagLocation").get(0).textContent);
+			jqUnit.assertEquals("Tag  width is updated in the field", "0", imageEditor.locate("tagWidth").get(0).textContent);
+			jqUnit.assertEquals("Tag  height is updated in the field", "0", imageEditor.locate("tagHeight").get(0).textContent);
+			
+			imageEditor.tagger.setLocationX(100);
+			imageEditor.tagger.setLocationY(100);
+			jqUnit.assertEquals("Tag location is updated in the field", "100, 100", imageEditor.locate("tagLocation").get(0).textContent);
+			
+			imageEditor.tagger.setLocationX(-100);
+			imageEditor.tagger.setLocationY(-100);
+			jqUnit.assertEquals("Tag location becomes 0, 0 for -ve location", "0, 0", imageEditor.locate("tagLocation").get(0).textContent);
+			
+			imageEditor.tagger.setLocationX(imageEditor.getImageWidth());
+			imageEditor.tagger.setLocationY(imageEditor.getImageHeight());
+			jqUnit.assertEquals("Tag location is updated in the field", imageEditor.imageCanvas.width() + ", " + imageEditor.imageCanvas.height(), imageEditor.locate("tagLocation").get(0).textContent);
+			
+			imageEditor.tagger.setLocationX(0);
+			imageEditor.tagger.setLocationY(0);
+			imageEditor.tagger.setWidth(imageEditor.getImageWidth());
+			imageEditor.tagger.setHeight(imageEditor.getImageHeight());
+			jqUnit.assertEquals("Tag width is updated in the field", imageEditor.imageCanvas.width() + "", imageEditor.locate("tagWidth").get(0).textContent);
+			jqUnit.assertEquals("Tag height is updated in the field", imageEditor.imageCanvas.height() + "", imageEditor.locate("tagHeight").get(0).textContent);
+			
+			var tagText = "Test Tag";
+			imageEditor.tagger.confirmTagAdd(tagText);
+			jqUnit.assertEquals("Tag count is one", 1, imageEditor.tagger.getNbAnnotations());
+			var tagList = imageEditor.tagger.getTagList();
+			jqUnit.assertEquals("Tag count is one", 1, tagList.length);
+			jqUnit.assertEquals("Tag text is correctly set", tagText, tagList[0]);
+			
+			imageEditor.locate("tagButton").click();
+			
+			imageEditor.tagger.highlightTag(0);
+			jqUnit.isVisible("The tag remove button is visible", ".fl-tagger-annotation-action-remove");
+			jqUnit.isVisible("The tag text div is visible", ".fl-tagger-annotation");
+			jqUnit.assertEquals("The tag text is correctly set", tagText, $(".fl-tagger-annotation").get(0).textContent);
+			
+
+
 		});
 		
 	});
