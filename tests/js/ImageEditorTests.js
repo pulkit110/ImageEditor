@@ -159,7 +159,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 		});
 		
 		// 4
-		imageEditorTests.test("Tagging", function () {
+		imageEditorTests.test("Basic Tagger Tests", function () {
 
 			//create a new image editor 
 			imageEditor = fluid.imageEditor(container, {
@@ -170,7 +170,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 			jqUnit.notVisible("Tag Menu is initially hidden", ".fl-image-editor-tag-options");
 			imageEditor.locate("tagButton").click();
-			jqUnit.isVisible("Ta Menu is displayed after clicking on Tag", ".fl-image-editor-tag-options");
+			jqUnit.isVisible("Tag Menu is displayed after clicking on Tag", ".fl-image-editor-tag-options");
+			jqUnit.assertTrue("tagStarted is set", imageEditor.tagStarted);
+
+			imageEditor.startTagging(imageEditor);
+			
+			jqUnit.assertNotNull("Canvas is not null", imageEditor.tagger.canvas);
+			jqUnit.assertNotUndefined("Canvas is not undefined", imageEditor.tagger.canvas);
+			jqUnit.assertNotNull("Context is not null", imageEditor.tagger.context);
+			jqUnit.assertNotUndefined("Context is not undefined", imageEditor.tagger.context);
+			jqUnit.assertNotNull("resizeFactor is not null", imageEditor.tagger.resizeFactor);
+			jqUnit.assertNotUndefined("resizeFactor is not undefined", imageEditor.tagger.resizeFactor);
+			jqUnit.assertNotNull("image is not null", imageEditor.tagger.image);
+			jqUnit.assertNotUndefined("image is not undefined", imageEditor.tagger.image);
+			jqUnit.assertNotNull("imageX is not null", imageEditor.tagger.imageX);
+			jqUnit.assertNotUndefined("imageX is not undefined", imageEditor.tagger.imageX);
+			jqUnit.assertNotNull("imageY is not null", imageEditor.tagger.imageY);
+			jqUnit.assertNotUndefined("imageY is not undefined", imageEditor.tagger.imageY);
+			jqUnit.assertNotNull("cropper is not null", imageEditor.tagger.cropper);
+			jqUnit.assertNotUndefined("cropper is not undefined", imageEditor.tagger.cropper);
 		});
 		
 	});

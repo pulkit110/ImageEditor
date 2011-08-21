@@ -208,14 +208,6 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.tagStarted = false;
 		}
 	};
-	
-	/**
-	 * Start a new tag
-	 */
-	var startTagging = function (that) {
-		that.tagger.init(that.imageCanvas, that.resizeFactor, that.image, that.imageX, that.imageY);
-		showElement(that, that.locate("newTagOptions"));
-	};
 
 	/**
 	 * Confirm the addition of new tag
@@ -354,7 +346,7 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.locate("resizeWidth").get(0).textContent = newValue / 100 * that.getImageWidth();
 			that.locate("resizeHeight").get(0).textContent = newValue / 100 * that.getImageHeight();
 		} else if (that.locate("newTag").get(0) === viewNode) {
-			startTagging(that);
+			that.startTagging(that);
 		} else if (that.locate("tagLocation").get(0) === viewNode) {
 			newLocation = newValue.split(',', 2);
 			if (newLocation.length === 2) {
@@ -558,6 +550,14 @@ var fluid_1_4 = fluid_1_4 || {};
 			that.image.src = imageURL;			// Set the source path
 		};
 		
+		/**
+		 * Start a new tag
+		 */
+		that.startTagging = function (that) {
+			that.tagger.init(that.imageCanvas, that.resizeFactor, that.image, that.imageX, that.imageY);
+			showElement(that, that.locate("newTagOptions"));
+		};
+	
 		/**
 		 * Returns the width of current image. 
 		 */
